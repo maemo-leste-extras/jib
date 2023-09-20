@@ -1,0 +1,5 @@
+jib (0.1) unstable; urgency=medium
+
+  * Initial code and debian packaging
+
+ -- Sander <sander@kroket.io>  Sat, 22 May 2021 20:33:36 +0100

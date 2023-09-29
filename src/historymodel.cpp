@@ -175,6 +175,8 @@ QList<HistoryItem*> HistoryModel::load_db(QString needle) {
     needle = needle.replace("%", "");
     needle = "%" + needle + "%";
     sql = sql.replace("_", "WHERE url LIKE :needle OR title LIKE :needle");
+  } else {
+    sql = sql.replace("_", "");
   }
 
   QSqlQuery query(m_ctx->db);

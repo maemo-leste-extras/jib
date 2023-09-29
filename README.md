@@ -2,7 +2,7 @@
 
 Jib is a simple web-browser for Maemo Leste.
 
-![https://i.imgur.com/NTGFhFH.jpg](https://i.imgur.com/NTGFhFH.jpg | width=240)
+<img src="https://i.imgur.com/kDeQoVJ.jpg" width="300"/>
 
 - Chromium based
 - Qt 5.15, CMake, CCache

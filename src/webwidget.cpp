@@ -34,6 +34,8 @@ WebWidget::WebWidget(QWidget *parent) :
   auto allowPDFViewer = config()->get(ConfigKeys::allowPdfViewer).toBool();
   auto allowWebGL = config()->get(ConfigKeys::allowWebGL).toBool();
   auto javascriptEnabled = config()->get(ConfigKeys::javascriptEnabled).toBool();
+  auto scrollbarEnabled = config()->get(ConfigKeys::allowScrollbar).toBool();
+  ui->webView->settings()->setAttribute(QWebEngineSettings::WebAttribute::ShowScrollBars, scrollbarEnabled);
   ui->webView->settings()->setAttribute(QWebEngineSettings::WebAttribute::JavascriptEnabled, javascriptEnabled);
   ui->webView->settings()->setAttribute(QWebEngineSettings::WebAttribute::PdfViewerEnabled, allowPDFViewer);
   ui->webView->settings()->setAttribute(QWebEngineSettings::WebAttribute::WebGLEnabled, allowWebGL);

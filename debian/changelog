@@ -1,3 +1,9 @@
+jib (0.3) unstable; urgency=medium
+
+  * Fix scrollbar user setting
+
+ -- Sander <sander@kroket.io>  Fri, 2 Feb 2024 20:34:36 +0100
+
 jib (0.2) unstable; urgency=medium
 
   * search via DuckDuckGo

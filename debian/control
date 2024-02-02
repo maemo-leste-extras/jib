@@ -17,6 +17,7 @@ Build-Depends: debhelper (>= 10),
     qtmultimedia5-dev,
     libqt5network5,
     qtwebengine5-dev,
+    libqolm,
     libqt5sql5-sqlite
 Homepage: https://github.com/maemo-leste-extras/jib
 XSBC-Bugtracker: https://github.com/maemo-leste-extras/jib/issues
@@ -31,6 +32,7 @@ Depends: ${shlibs:Depends}, ${misc:Depends},
     libqt5network5,
     libqt5charts5,
     libqt5webengine5,
+    libqolm,
     libqt5sql5-sqlite
 Description: A simple Qt/Chromium based web-browser for Maemo Leste
 XB-Maemo-Display-Name: Jib

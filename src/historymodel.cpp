@@ -45,7 +45,7 @@ void HistoryModel::SQLUpdateTitle(const QString &url, const QString &title) {
   query.prepare(sql);
   query.bindValue(":title", title);
   query.bindValue(":url", url);
-  AppContext::SqlExec(query);
+  Utils::SqlExec(query);
 
   if(!items.isEmpty()) {
     auto item = items.first();
@@ -68,13 +68,29 @@ void HistoryModel::saveHistory() {
 
   QMap<time_t, QString>::iterator i;
   for(const HistoryItem *item: m_urlHistoryBuffer) {
-    QSqlQuery query(m_ctx->db);
     auto _url = item->url();
-    query.prepare("insert into visits (domain, url, title) values(:domain, :url, :title)");
+    auto qurl = QUrl(_url);
+    auto _host = qurl.host();
+    auto _scheme = qurl.scheme();
+
+    QSqlQuery query(m_ctx->db);
+    query.prepare("INSERT INTO visits (domain, url, title) VALUES(:domain, :url, :title)");
     query.bindValue(":title", item->name());
-    query.bindValue(":domain", QUrl(_url).host());
+    query.bindValue(":domain", _host);
     query.bindValue(":url", _url);
-    AppContext::SqlExec(query);
+    Utils::SqlExec(query);
+
+    query = QSqlQuery(m_ctx->db);
+    query.prepare("INSERT OR IGNORE INTO popularity(domain, title, scheme, count) VALUES(:domain, :title, :scheme, 0);");
+    query.bindValue(":domain", _host);
+    query.bindValue(":scheme", _scheme);
+    query.bindValue(":title", _host);
+    Utils::SqlExec(query);
+
+    query = QSqlQuery(m_ctx->db);
+    query.prepare("UPDATE popularity SET count = count + 1 WHERE domain = :domain");
+    query.bindValue(":domain", _host);
+    Utils::SqlExec(query);
   }
 
   m_urlHistoryBuffer.clear();
@@ -120,6 +136,8 @@ QVariant HistoryModel::data(const QModelIndex &index, int role) const {
         auto _dt = acc->date();
         return _dt.toString("MM-dd HH:mm");
       }
+      case Qt::ForegroundRole:
+        return QVariant::fromValue(QColor(Qt::white));
       default:
         return QVariant();
     }
@@ -184,7 +202,7 @@ QList<HistoryItem*> HistoryModel::load_db(QString needle) {
   if(!needle.isEmpty())
     query.bindValue(":needle", needle);
 
-  auto q = AppContext::SqlExec(query);
+  auto q = Utils::SqlExec(query);
   while (q.next()) {
     QString id = q.value(0).toString();
     QString dt = q.value(1).toString();

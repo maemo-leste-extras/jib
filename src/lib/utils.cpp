@@ -70,3 +70,24 @@ void Utils::removeFiles(const QString &path) {
   for(const auto &dirFile: dir.entryList())
     dir.remove(dirFile);
 }
+
+QSqlQuery Utils::SqlExec(QSqlDatabase &db, const QString &sql) {
+  QSqlQuery q(db);
+  auto res = q.exec(sql);
+  if(!res) {
+    auto err = q.lastError().text();
+    if (!err.contains("already exists"))
+      qCritical() << "SQL error: " << err;
+  }
+  return q;
+}
+
+QSqlQuery Utils::SqlExec(QSqlQuery &q) {
+  auto res = q.exec();
+  if(!res) {
+    auto err = q.lastError().text();
+    if (!err.contains("already exists"))
+      qCritical() << "SQL error: " << err;
+  }
+  return q;
+}

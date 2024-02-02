@@ -8,6 +8,10 @@
 #include <QStandardItemModel>
 #include <QTextCharFormat>
 #include <QApplication>
+#include <QSqlDatabase>
+#include <QSqlDatabase>
+#include <QSqlQuery>
+#include <QSqlError>
 
 class Utils
 {
@@ -23,4 +27,6 @@ public:
     static bool dirExists(const QString &path);
     static QString to_md5(const QString &inp);
     static void removeFiles(const QString &path);
+    static QSqlQuery SqlExec(QSqlDatabase &db, const QString &sql);
+    static QSqlQuery SqlExec(QSqlQuery &q);
 };

@@ -13,9 +13,12 @@
 #include <QQueue>
 #include <QThread>
 #include <QMutex>
+#include <QFontDatabase>
 
 #include "lib/config.h"
 #include "historymodel.h"
+#include "popularitymodel.h"
+#include "suggestionmodel.h"
 
 
 class AppContext : public QObject {
@@ -42,18 +45,23 @@ public:
   QString ua = uaMobile;
 
   HistoryModel *historyModel;
+  PopularSites *popularSites;
+  SuggestionModel *suggestionModel;
   QString dbFile;
   QSqlDatabase db;
 
   void initdb();
+  QFont iconFont() const;
   void findDomainIcon(const QString &domain);
   void SqlCreateSchema();
   static QSqlQuery SqlExec(QSqlQuery &q);
   QSqlQuery SqlExec(const QString &q);
   static void SqlExecError(const QSqlQuery &q);
   QIcon* getThumbIcon(const QString &domain);
+  QPixmap getThumbPixmap(const QString &domain, int height, int width);
 
 private:
+  int m_fonts;
   void createConfigDirectory(const QString &dir);
   QMap<QString, QIcon*> m_cacheIcons;
 };

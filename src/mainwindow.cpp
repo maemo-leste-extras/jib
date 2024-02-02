@@ -31,6 +31,10 @@ MainWindow::MainWindow(AppContext *ctx, QWidget *parent) :
 
   connect(ui->actionExit, &QAction::triggered, this, &MainWindow::onQuitApplication);
 
+  // popular sites
+  connect(m_ctx->popularSites, &PopularSites::dataChanged, this->ui->widgetWeb, &WebWidget::onPopularSitesChanged);
+  m_ctx->popularSites->start();
+
   // web connects
   connect(ui->widgetWeb, &WebWidget::windowTitleChanged, this, &MainWindow::setWindowTitle);
   connect(ui->widgetWeb, &WebWidget::settingsClicked, this, &MainWindow::showSettingsview);

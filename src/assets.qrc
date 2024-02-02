@@ -5,5 +5,7 @@
         <file>assets/splash.html</file>
         <file>assets/appicon.icns</file>
         <file>assets/maemo.ico</file>
+        <file>assets/fonts.ttf</file>
+        <file>assets/maemo.png</file>
     </qresource>
 </RCC>

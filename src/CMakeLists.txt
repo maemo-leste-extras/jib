@@ -17,6 +17,7 @@ file(GLOB SOURCE_FILES
 # Find Qt. Use a CMake definition to point it to your Qt installation
 # location (if necessary), e.g: -DCMAKE_PREFIX_PATH=/home/user/Qt/5.15.2/gcc_64
 find_package(Qt5 REQUIRED COMPONENTS Core Widgets Gui Network WebEngine WebEngineWidgets Svg Xml Sql)
+add_subdirectory(contrib/QOlm/)
 
 qt5_add_resources(RESOURCES assets.qrc)
 
@@ -108,6 +109,7 @@ target_link_libraries(jib PUBLIC
         Qt5::WebEngine
         Qt5::WebEngineWidgets
         Threads::Threads
+        QOlm::QOlm
 )
 
 if(NOT APPLE)

@@ -3,15 +3,18 @@
 #include <QStandardItemModel>
 #include <QTableWidget>
 #include <QDesktopServices>
+#include <QSizePolicy>
 
 #include "mainwindow.h"
 #include "webwidget.h"
+#include "launchitemwidget.h"
 #include "ui_webwidget.h"
 
 WebWidget::WebWidget(QWidget *parent) :
-        QWidget(parent),
-        ui(new Ui::WebWidget),
-        m_contextMenu(new QMenu(this))
+    QWidget(parent),
+    ui(new Ui::WebWidget),
+    m_zoomTimer(new QTimer(this)),
+    m_contextMenu(new QMenu(this))
 {
   ui->setupUi(this);
 
@@ -39,18 +42,29 @@ WebWidget::WebWidget(QWidget *parent) :
   auto user_agent = config()->get(ConfigKeys::ua).toString();
   this->onSetUserAgent(user_agent);
 
-  auto zoomFactor = config()->get(ConfigKeys::zoomFactor).toInt();
-  ui->webView->setZoomFactor(zoomFactor / 100);
-
   QPixmap p_general_search("/usr/share/icons/hicolor/48x48/hildon/general_search.png");
   ui->iconSearch->setPixmap(p_general_search);
 
   ui->urlBar->setStyleSheet("QLineEdit { background-color: #8e8e8e; padding-left: 8px; border-radius: 8px; padding-bottom:2px; }");
   this->setStyleSheet("background-color: #575757;");
 
+  connect(ui->urlBar, &QLineEditFocus::focussed, this, [=](bool inFocus) {
+    if(inFocus) {
+      showSuggestions();
+      QTimer::singleShot(0, [=]{
+          ui->urlBar->selectAll();
+      });
+    }
+  });
+
   connect(ui->btnFullscreen, &QPushButton::clicked, [=] {
     emit fullscreenClicked();
     this->setBottomBarHighlights();
+  });
+
+  connect(ui->urlBar, &QLineEdit::textChanged, this, [=](QString text) {
+    if(!text.isEmpty() && text.length() > 2 && !text.startsWith("about:"))
+      m_ctx->suggestionModel->search(text);
   });
 
   connect(ui->btnBack, &QPushButton::clicked, [=] {
@@ -70,19 +84,17 @@ WebWidget::WebWidget(QWidget *parent) :
 //    qDebug() << "new title: " << title;
 //  });
 
-  connect(ui->webView, &QWebEngineView::urlChanged, [=](const QUrl &url){
+  connect(ui->webView, &QWebEngineView::urlChanged, [=](const QUrl &url) {
     auto _url = url.toString();
-    auto _host = url.host();
+    if(_url.startsWith("data:") || _url.startsWith("about:"))
+      return;
 
-    if(!_url.startsWith("data:")) {
-      auto title = ui->webView->title();
-      m_ctx->historyModel->registerHistoryURL(_url, title);
-      this->setURLBarText(_url);
-      m_ctx->currentUrl = _url;
+    auto title = ui->webView->title();
+    this->setURLBarText(_url);
+    m_ctx->currentUrl = _url;
+    m_ctx->pageTitle = title;
 
-      auto zoomFactor = config()->get(ConfigKeys::zoomFactor).toInt();
-      ui->webView->setZoomFactor(zoomFactor / 100);
-    }
+    setZoomFactor();
   });
 
   connect(ui->webView, &QWebEngineView::loadStarted, [=] {
@@ -92,6 +104,11 @@ WebWidget::WebWidget(QWidget *parent) :
 
   connect(ui->webView, &QWebEngineView::loadFinished, [=](bool status) {
     m_ctx->is_loading = false;
+
+    if(status && !m_ctx->currentUrl.isEmpty())
+      m_ctx->historyModel->registerHistoryURL(m_ctx->currentUrl, m_ctx->pageTitle);
+
+    this->setZoomFactor();
     setWindowTitle();
   });
 
@@ -107,8 +124,14 @@ WebWidget::WebWidget(QWidget *parent) :
     auto url = ui->urlBar->text().trimmed();
     if(!url.startsWith("http://") && !url.startsWith("https://") && url != "about:blank")
       url = "http://" + url;
-
     ui->webView->load(QUrl(url));
+    ui->frameSuggestions->hide();
+    showWebview();
+  });
+
+  connect(this, &WebWidget::visit, [=](QString url){
+    ui->webView->load(QUrl(url));
+    showWebview();
   });
 
   connect(ui->btnNav, &QPushButton::clicked, [=] {
@@ -128,6 +151,110 @@ WebWidget::WebWidget(QWidget *parent) :
 
   this->setBottomBarHighlights();
   this->showSplash();
+
+  ui->suggestionsTable->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+  ui->suggestionsTable->verticalHeader()->setVisible(false);
+  ui->suggestionsTable->horizontalHeader()->setVisible(false);
+  ui->suggestionsTable->setShowGrid(false);
+  ui->suggestionsTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+  ui->suggestionsTable->setFont(QFont("Ubuntu", 20));
+  ui->suggestionsTable->setModel(m_ctx->suggestionModel);
+  ui->suggestionsTable->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
+  ui->suggestionsTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
+  ui->suggestionsTable->setFocusPolicy(Qt::NoFocus);
+  ui->suggestionsTable->setSelectionMode(QAbstractItemView::NoSelection);
+
+  connect(ui->suggestionsTable, &QTableView::clicked, [=] {
+    qDebug() << "clicked";
+
+    QModelIndex index = ui->suggestionsTable->currentIndex();
+    auto item = m_ctx->suggestionModel->items.at(index.row());
+    emit urlClicked(item->url);
+  });
+
+//  connect(ui->suggestionsTable, &QTableView::clicked, [=] {
+//    ui->frameSuggestions->hide();
+//    ui->webView->show();
+//    this->linkClicked();
+//  });
+  connect(this, &WebWidget::urlClicked, this, &WebWidget::onVisitUrl);
+
+  showWebview();
+
+  // button icons
+  auto iconFont = m_ctx->iconFont();
+  iconFont.setPointSize(16);
+  ui->btnSettings->setFont(iconFont);
+  ui->btnSettings->setText(QChar(0xE804));
+  ui->btnNav->setFont(iconFont);
+  ui->btnNav->setText(QChar(0xE80B));
+  ui->btnFullscreen->setFont(iconFont);
+  ui->btnFullscreen->setText(QChar(0xF108));
+  ui->btnReload->setFont(iconFont);
+  ui->btnReload->setText(QChar(0xE80C));
+  ui->btnBack->setFont(iconFont);
+  ui->btnBack->setText(QChar(0xE80D));
+  ui->btnForward->setFont(iconFont);
+  ui->btnForward->setText(QChar(0xE80E));
+
+  m_zoomTimer->setInterval(1000);
+  auto zoomFactor = config()->get(ConfigKeys::zoomFactor).toDouble();
+  ui->webView->setZoomFactor(zoomFactor / 100);
+  connect(m_zoomTimer, &QTimer::timeout, this, [=] {
+    auto _zoomFactor = ui->webView->zoomFactor();
+    if(_zoomFactor * 100 != zoomFactor)
+      ui->webView->setZoomFactor(zoomFactor / 100);
+  });
+  m_zoomTimer->start();
+}
+
+void WebWidget::popularItemsClear() {
+  while (QLayoutItem* item = ui->popularLayout->takeAt(0)) {
+    if(QWidget *widget = item->widget())
+      widget->deleteLater();
+  }
+
+  popItemFrames.clear();
+}
+
+void WebWidget::popularItemFill() {
+  auto _width = 128;
+  auto _height = 78;
+  auto count = 0;
+
+  for(const auto &item: *m_ctx->popularSites->model) {
+    auto *f = new ClickFrame(this);
+    f->setMaximumHeight(_height);
+    f->setMaximumWidth(_width);
+    f->setMinimumHeight(_height);
+    f->setMaximumWidth(_width);
+    f->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+
+    auto *launchItem = new LaunchItemWidget(m_ctx, item->title, item->domain, this);
+    launchItem->setMaximumHeight(_height);
+    launchItem->setMaximumWidth(_width);
+    launchItem->setMinimumHeight(_height);
+    launchItem->setMinimumWidth(_width);
+    launchItem->setContentsMargins(0, 0, 0, 0);
+    launchItem->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+
+    auto layout = new QGridLayout(this);
+    layout->setContentsMargins(0, 4, 0, 0);
+    layout->addWidget(launchItem);
+    f->setLayout(layout);
+    ui->popularLayout->insertWidget(count, f);
+    count += 1;
+
+    popItemFrames << f;
+    connect(f, &ClickFrame::clicked, this, [=]() {
+      auto _url = QString("%1://%2").arg(item->scheme, item->domain);
+      ui->urlBar->setText(_url);
+      ui->urlBar->clearFocus();
+      emit visit(_url);
+    });
+  }
+
+  ui->popularLayout->addStretch();
 }
 
 void WebWidget::favIconChanged(const QIcon &icon) {
@@ -156,6 +283,7 @@ void WebWidget::showSplash() {
 
 void WebWidget::onVisitUrl(const QString &url) {
   ui->webView->load(QUrl(url));
+  showWebview();
 }
 
 void WebWidget::setURLBarText(const QString &url) {
@@ -220,6 +348,39 @@ void WebWidget::onSetUserAgent(const QString &user_agent) {
   ui->webView->page()->profile()->setHttpUserAgent(user_agent);
 }
 
+void WebWidget::onPopularSitesChanged() {
+  this->popularItemsClear();
+  this->popularItemFill();
+}
+
+void WebWidget::framePopularShow() {
+//  ui->framePopular->show();
+//  ui->framePopular->setMaximumHeight(90);
+}
+
+void WebWidget::framePopularHide() {
+//  ui->framePopular->hide();
+//  ui->framePopular->setMaximumHeight(6);
+}
+
+void WebWidget::showSuggestions() {
+  ui->webView->hide();
+  ui->frameSuggestions->show();
+  ui->framePopular->show();
+  ui->framePopular->setMaximumHeight(90);
+}
+
+void WebWidget::showWebview() {
+  ui->webView->show();
+  ui->frameSuggestions->hide();
+  ui->framePopular->hide();
+}
+
+void WebWidget::setZoomFactor() {
+  auto zoomFactor = config()->get(ConfigKeys::zoomFactor).toDouble();
+  ui->webView->setZoomFactor(zoomFactor / 100);
+}
+
 WebWidget::~WebWidget() {
-    delete ui;
+  delete ui;
 }

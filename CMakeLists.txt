@@ -46,7 +46,6 @@ if(UNIX AND NOT APPLE AND NOT ANDROID)
     endif()
 endif()
 
-# Find pthread
 find_package(Threads REQUIRED)
 
 add_subdirectory(src)

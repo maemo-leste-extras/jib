@@ -1,3 +1,14 @@
+jib (0.2) unstable; urgency=medium
+
+  * search via DuckDuckGo
+  * display popular webpages for quick access
+  * auto-complete URL bar with suggestions for quick access
+  * select all URL bar text when it comes into focus
+  * replace bottomBar text with icons
+  * fix webpage zoom functionality
+
+ -- Sander <sander@kroket.io>  Fri, 2 Feb 2024 20:33:36 +0100
+
 jib (0.1) unstable; urgency=medium
 
   * Initial code and debian packaging

@@ -22,6 +22,22 @@ AppContext::AppContext() {
   this->initdb();
 
   historyModel = new HistoryModel(this);
+  popularSites = new PopularSites(&db, this);
+  suggestionModel = new SuggestionModel(&db, this);
+  connect(historyModel, &QAbstractListModel::dataChanged, [=]{
+    popularSites->dirty = true;
+  });
+  connect(historyModel, &QAbstractListModel::rowsInserted, [=]{
+    popularSites->dirty = true;
+  });
+
+  // fonts
+  m_fonts = QFontDatabase::addApplicationFont(":/assets/fonts.ttf");
+}
+
+QFont AppContext::iconFont() const {
+  QString family = QFontDatabase::applicationFontFamilies(m_fonts).at(0);
+  return {family};
 }
 
 void AppContext::initdb() {
@@ -33,37 +49,29 @@ void AppContext::initdb() {
   this->SqlCreateSchema();
 }
 
+QPixmap AppContext::getThumbPixmap(const QString &domain, int height, int width) {
+  auto *icon = this->getThumbIcon(domain);
+  return icon->pixmap(icon->actualSize(QSize(height, width)));
+}
+
 QIcon* AppContext::getThumbIcon(const QString &domain) {
   if(m_cacheIcons.contains(domain)) return m_cacheIcons[domain];
 
   auto domain_md5 = Utils::to_md5(domain);
   auto path = this->iconCacheDirectory + "/" + domain_md5 + ".png";
   if(Utils::fileExists(path)) {
-    auto *icon = new QIcon(path);
-    m_cacheIcons.insert(domain, icon);
-    return icon;
-  } else {
-    return new QIcon("qrc:/assets/maemo.ico");
+    auto info = QFileInfo(path);
+    if(info.size() >= 128) {
+      auto *icon = new QIcon(path);
+      m_cacheIcons.insert(domain, icon);
+      return icon;
+    }
   }
-}
 
-QSqlQuery AppContext::SqlExec(QSqlQuery &q) {
-  auto res = q.exec();
-  if(!res) AppContext::SqlExecError(q);
-  return q;
-}
-
-QSqlQuery AppContext::SqlExec(const QString &sql) {
-  QSqlQuery q(db);
-  auto res = q.exec(sql);
-  if(!res) AppContext::SqlExecError(q);
-  return q;
-}
-
-void AppContext::SqlExecError(const QSqlQuery &q) {
-  auto err = q.lastError().text();
-  if (!err.contains("already exists"))
-    qCritical() << "SQL error: " << err;
+  // no icon, use maemo default
+  auto *icon = new QIcon(":/assets/maemo.png");
+  m_cacheIcons.insert(domain, icon);
+  return icon;
 }
 
 void AppContext::SqlCreateSchema() {
@@ -79,17 +87,28 @@ void AppContext::SqlCreateSchema() {
     "url varchar(256), "
     "domain varchar(64), "
     "title varchar(256))";
-  auto idx_url = "CREATE INDEX visits_url ON visits (url);";
+  auto table_popularity = "create table popularity "
+    "(id integer primary key, "
+    "domain varchar(128) UNIQUE,"
+    "title varchar(256),"
+    "scheme varchar(16),"
+    "count integer)";
+  auto table_bookmark = "create table bookmarks "
+    "(id integer primary key, "
+    "url varchar(128) UNIQUE,"
+    "title varchar(256))";
 
-  for(const auto table_item: {table_icons, table_visits, idx_url}) {
-    auto res = query.exec(table_item);
-    AppContext::SqlExec(table_item);
+  auto idx_url = "CREATE INDEX visits_url ON visits (url);";
+  auto idx_popularity_domain = "CREATE INDEX domain ON popularity (domain);";
+  auto idx_popularity_count = "CREATE INDEX count ON popularity (count);";
+
+  for(const auto table_item: {table_icons, table_visits, table_popularity, table_bookmark, idx_url, idx_popularity_domain, idx_popularity_count}) {
+    Utils::SqlExec(db, table_item);
   }
 }
 
 void AppContext::findDomainIcon(const QString &domain) {
   QSqlQuery query;
-  query.exec("SELECT name, salary FROM employee WHERE salary > 50000");
 }
 
 void AppContext::createConfigDirectory(const QString &dir) {

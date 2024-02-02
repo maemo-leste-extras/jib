@@ -17,10 +17,13 @@
 #include <QFileInfo>
 
 #include "ctx.h"
+#include "lib/QClickFrame.h"
+#include "popularitymodel.h"
 
 namespace Ui {
   class WebWidget;
 }
+
 
 class WebWidget : public QWidget
 {
@@ -35,12 +38,16 @@ public:
   void registerURLVisited(const QString &url);
   void setWindowTitle();
   void showSplash();
+  void popularItemFill();
+  void popularItemsClear();
   ~WebWidget();
 
 signals:
   void fullscreenClicked();
   void settingsClicked();
   void windowTitleChanged(const QString &title);
+  void visit(QString url);
+  void urlClicked(const QString &url);
 
 public slots:
   void onSetUserAgent(const QString &user_agent);
@@ -53,13 +60,21 @@ public slots:
   void onAllowScrollbarChanged(bool status);
   void onAllowWebGLEnabled(bool status);
   void onZoomFactorChanged(double amount);
+  void onPopularSitesChanged();
 
 private:
   void showContextMenu(const QPoint &pos);
+  void framePopularShow();
+  void framePopularHide();
+  void showSuggestions();
+  void showWebview();
+  void setZoomFactor();
 
   AppContext *m_ctx;
   Ui::WebWidget *ui;
   QMenu *m_contextMenu;
+  QTimer *m_zoomTimer;
+  QList<ClickFrame*> popItemFrames;
   bool m_showing_navscreen = true;
 
   void handleLeftSwipe() {

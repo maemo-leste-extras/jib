@@ -14,7 +14,7 @@
    <string>Browser</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QGridLayout" name="gridLayout">
+   <layout class="QVBoxLayout" name="verticalLayout">
     <property name="leftMargin">
      <number>0</number>
     </property>
@@ -27,17 +27,17 @@
     <property name="bottomMargin">
      <number>0</number>
     </property>
-    <item row="0" column="0">
-     <widget class="WebWidget" name="widgetWeb" native="true"/>
+    <item>
+     <widget class="AboutWidget" name="widgetAbout" native="true"/>
     </item>
-    <item row="0" column="3">
-     <widget class="SettingsWidget" name="widgetSettings" native="true"/>
-    </item>
-    <item row="0" column="1">
+    <item>
      <widget class="HistoryWidget" name="widgetHistory" native="true"/>
     </item>
-    <item row="0" column="2">
-     <widget class="AboutWidget" name="widgetAbout" native="true"/>
+    <item>
+     <widget class="SettingsWidget" name="widgetSettings" native="true"/>
+    </item>
+    <item>
+     <widget class="WebWidget" name="widgetWeb" native="true"/>
     </item>
    </layout>
   </widget>

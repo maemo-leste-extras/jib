@@ -27,22 +27,19 @@ HistoryWidget::HistoryWidget(QWidget *parent) :
   connect(ui->historyView, &QTableView::doubleClicked, this, &HistoryWidget::linkClicked);
 
   ui->historyView->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-
   ui->historyView->verticalHeader()->setVisible(false);
   ui->historyView->horizontalHeader()->setVisible(false);
   ui->historyView->setSelectionBehavior(QAbstractItemView::SelectRows);
-
-  //ui->historyView->setColumnWidth(2, 160);
-  ui->historyView->setFont(QFont("Ubuntu", 18));
+  ui->historyView->setShowGrid(false);
+  ui->historyView->setFont(QFont("Ubuntu", 20));
   ui->historyView->setModel(m_ctx->historyModel);
-
   ui->historyView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
   ui->historyView->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
   ui->historyView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
 
   connect(ui->btnClear, &QPushButton::clicked, [=]{
     Utils::removeFiles(m_ctx->iconCacheDirectory);
-    m_ctx->SqlExec("DELETE FROM visits");
+    Utils::SqlExec(m_ctx->db, "DELETE FROM visits");
     m_ctx->historyModel->clear();
   });
 

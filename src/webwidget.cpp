@@ -82,6 +82,10 @@ WebWidget::WebWidget(QWidget *parent) :
     emit settingsClicked();
   });
 
+  connect(ui->btnWindows, &QPushButton::clicked, [=] {
+    emit newWindowClicked();
+  });
+
 //  connect(ui->webView, &QWebEngineView::titleChanged, [=](const QString &title) {
 //    qDebug() << "new title: " << title;
 //  });
@@ -167,12 +171,18 @@ WebWidget::WebWidget(QWidget *parent) :
   ui->suggestionsTable->horizontalHeader()->setVisible(false);
   ui->suggestionsTable->setShowGrid(false);
   ui->suggestionsTable->setSelectionBehavior(QAbstractItemView::SelectRows);
-  ui->suggestionsTable->setFont(QFont("Ubuntu", 20));
+  ui->suggestionsTable->setFont(QFont("Ubuntu", 22));
   ui->suggestionsTable->setModel(m_ctx->suggestionModel);
   ui->suggestionsTable->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
   ui->suggestionsTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
   ui->suggestionsTable->setFocusPolicy(Qt::NoFocus);
   ui->suggestionsTable->setSelectionMode(QAbstractItemView::NoSelection);
+  ui->suggestionsTable->setStyleSheet("QTableView::item { padding-bottom: 32px; }");
+
+  connect(ui->suggestionsTable, &ClickTable::emptySpaceClicked, [=] {
+    ui->urlBar->clearFocus();
+    this->showWebview();
+  });
 
   connect(ui->suggestionsTable, &QTableView::clicked, [=] {
     qDebug() << "clicked";
@@ -200,6 +210,9 @@ WebWidget::WebWidget(QWidget *parent) :
   ui->btnNav->setText(QChar(0xE80B));
   ui->btnFullscreen->setFont(iconFont);
   ui->btnFullscreen->setText(QChar(0xF108));
+  ui->btnFullscreen->hide();
+  ui->lineFullscreen->hide();
+  //ui->lineWindows->hide();
   ui->btnReload->setFont(iconFont);
   ui->btnReload->setText(QChar(0xE80C));
   ui->btnBack->setFont(iconFont);
@@ -216,6 +229,8 @@ WebWidget::WebWidget(QWidget *parent) :
       ui->webView->setZoomFactor(zoomFactor / 100);
   });
   m_zoomTimer->start();
+
+  onPopularSitesChanged();
 }
 
 void WebWidget::popularItemsClear() {
@@ -328,6 +343,7 @@ void WebWidget::setBottomBarHighlights() {
   ui->lineBack->setStyleSheet(inactiveColor);
   ui->lineForward->setStyleSheet(inactiveColor);
   ui->lineReload->setStyleSheet(inactiveColor);
+  ui->lineWindows->setStyleSheet(inactiveColor);
 }
 
 void WebWidget::onZoomFactorChanged(double amount) {
@@ -389,6 +405,10 @@ void WebWidget::showWebview() {
 void WebWidget::setZoomFactor() {
   auto zoomFactor = config()->get(ConfigKeys::zoomFactor).toDouble();
   ui->webView->setZoomFactor(zoomFactor / 100);
+}
+
+void WebWidget::onWindowCountChanged(int count) {
+  ui->btnWindows->setText(QString::number(count));
 }
 
 WebWidget::~WebWidget() {

@@ -15,6 +15,7 @@ Q_IMPORT_PLUGIN(QXcbIntegrationPlugin)
 #include <sys/types.h>
 #include "mainwindow.h"
 #include "ctx.h"
+#include "windowmanager.h"
 
 int main(int argc, char *argv[]) {
   Q_INIT_RESOURCE(assets);
@@ -57,8 +58,10 @@ int main(int argc, char *argv[]) {
   qDebug() << "SSL build: " << QSslSocket::sslLibraryBuildVersionString();
 
   auto *ctx = new AppContext();
-  ctx->isDebug = false;
-  new MainWindow(ctx);
-
+#ifdef DEBUG
+  ctx->isDebug = true;
+  auto windowManager = new WindowManager(ctx);
+  windowManager->spawn();
+#endif
   return QApplication::exec();
 }

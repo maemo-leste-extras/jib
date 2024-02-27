@@ -33,7 +33,7 @@ class MainWindow : public QMainWindow
   Q_OBJECT
 
 public:
-  explicit MainWindow(AppContext *ctx, QWidget *parent = nullptr);
+  explicit MainWindow(AppContext *ctx, QString window_id, QWidget *parent = nullptr);
   static AppContext *getContext();
   static MainWindow *getInstance();
   void setupUIModels();
@@ -60,11 +60,21 @@ public slots:
   void showHistoryview();
   void showSettingsview();
   void showAboutview();
+  void onWindowCountChanged(int count);
+
+signals:
+  void windowCountChanged(int count);
+  void newWindowClicked();
+  void windowClosed(QString window_id);
+
+protected:
+  void closeEvent(QCloseEvent *event);
 
 private:
   Ui::MainWindow *ui;
   static MainWindow *pMainWindow;
   AppContext *m_ctx = nullptr;
+  QString m_window_id;
 
   QTimer *m_timerFavicon;
   QString m_faviconUrl;

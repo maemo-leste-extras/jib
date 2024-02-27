@@ -3,9 +3,10 @@
 
 MainWindow * MainWindow::pMainWindow = nullptr;
 
-MainWindow::MainWindow(AppContext *ctx, QWidget *parent) :
+MainWindow::MainWindow(AppContext *ctx, QString window_id, QWidget *parent) :
     QMainWindow(parent),
     m_ctx(ctx),
+    m_window_id(window_id),
     m_timerFavicon(new QTimer),
     ui(new Ui::MainWindow)
 {
@@ -27,7 +28,6 @@ MainWindow::MainWindow(AppContext *ctx, QWidget *parent) :
     this->screenRect.width()).arg(this->screenRect.height()).arg(this->screenDpi);
 
   this->showWebview();
-  this->show();
 
   connect(ui->actionExit, &QAction::triggered, this, &MainWindow::onQuitApplication);
 
@@ -36,6 +36,7 @@ MainWindow::MainWindow(AppContext *ctx, QWidget *parent) :
   m_ctx->popularSites->start();
 
   // web connects
+  connect(ui->widgetWeb, &WebWidget::newWindowClicked, this, &MainWindow::newWindowClicked);
   connect(ui->widgetWeb, &WebWidget::windowTitleChanged, this, &MainWindow::setWindowTitle);
   connect(ui->widgetWeb, &WebWidget::settingsClicked, this, &MainWindow::showSettingsview);
   connect(ui->widgetWeb, &WebWidget::fullscreenClicked, [=] {
@@ -65,6 +66,12 @@ MainWindow::MainWindow(AppContext *ctx, QWidget *parent) :
   connect(ui->widgetSettings, &SettingsWidget::allowPDFViewerChanged, ui->widgetWeb, &WebWidget::onAllowPDFViewerChanged);
   connect(ui->widgetSettings, &SettingsWidget::allowScrollbarChanged, ui->widgetWeb, &WebWidget::onAllowScrollbarChanged);
   connect(ui->widgetSettings, &SettingsWidget::allowWebGLChanged, ui->widgetWeb, &WebWidget::onAllowWebGLEnabled);
+
+  connect(this, &MainWindow::windowCountChanged, ui->widgetWeb, &WebWidget::onWindowCountChanged);
+}
+
+void MainWindow::onWindowCountChanged(int count) {
+  emit windowCountChanged(count);
 }
 
 void MainWindow::showWebview() {
@@ -113,3 +120,7 @@ MainWindow::~MainWindow() {
   delete ui;
 }
 
+void MainWindow::closeEvent(QCloseEvent *event){
+  emit windowClosed(m_window_id);
+  event->accept();
+}

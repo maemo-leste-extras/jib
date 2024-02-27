@@ -45,6 +45,7 @@ public:
 signals:
   void fullscreenClicked();
   void settingsClicked();
+  void newWindowClicked();
   void windowTitleChanged(const QString &title);
   void visit(QString url);
   void urlClicked(const QString &url);
@@ -61,6 +62,7 @@ public slots:
   void onAllowWebGLEnabled(bool status);
   void onZoomFactorChanged(double amount);
   void onPopularSitesChanged();
+  void onWindowCountChanged(int count);
 
 private:
   void showContextMenu(const QPoint &pos);

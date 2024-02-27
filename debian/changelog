@@ -1,3 +1,10 @@
+jib (0.4.1) unstable; urgency=medium
+
+  - multi-window support
+  - clicking on empty space closes "suggestions mode"
+
+ -- Sander <sander@kroket.io>  Tue, 27 Feb 2024 20:34:36 +0100
+
 jib (0.3) unstable; urgency=medium
 
   * Fix scrollbar user setting

@@ -49,3 +49,4 @@ endif()
 find_package(Threads REQUIRED)
 
 add_subdirectory(src)
+install(FILES jib.desktop DESTINATION share/applications/hildon)

@@ -22,7 +22,8 @@ SuggestionModel::SuggestionModel(QSqlDatabase *db, QObject *parent) :
 void SuggestionModel::search(QString url) {
   beginResetModel();
   items.clear();
-  auto sql = QString("SELECT url, domain, title FROM visits WHERE url LIKE :url GROUP BY url ORDER BY id DESC LIMIT 5;");
+  int max = 3;
+  auto sql = QString("SELECT url, domain, title FROM visits WHERE url LIKE :url GROUP BY url ORDER BY dt DESC LIMIT :max;");
 
   url = url.replace("%", "");
   url = "%" + url + "%";
@@ -30,6 +31,7 @@ void SuggestionModel::search(QString url) {
   QSqlQuery query(*m_db);
   query.prepare(sql);
   query.bindValue(":url", url);
+  query.bindValue(":max", max);
 
   auto q = Utils::SqlExec(query);
   int total = 0;

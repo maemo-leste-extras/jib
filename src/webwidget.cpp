@@ -169,7 +169,7 @@ WebWidget::WebWidget(QWidget *parent) :
   ui->suggestionsTable->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
   ui->suggestionsTable->verticalHeader()->setVisible(false);
   ui->suggestionsTable->horizontalHeader()->setVisible(false);
-  ui->suggestionsTable->setShowGrid(false);
+  ui->suggestionsTable->setShowGrid(true);
   ui->suggestionsTable->setSelectionBehavior(QAbstractItemView::SelectRows);
   ui->suggestionsTable->setFont(QFont("Ubuntu", 22));
   ui->suggestionsTable->setModel(m_ctx->suggestionModel);
@@ -177,7 +177,10 @@ WebWidget::WebWidget(QWidget *parent) :
   ui->suggestionsTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
   ui->suggestionsTable->setFocusPolicy(Qt::NoFocus);
   ui->suggestionsTable->setSelectionMode(QAbstractItemView::NoSelection);
-  ui->suggestionsTable->setStyleSheet("QTableView::item { padding-bottom: 32px; }");
+  // fixed row height
+  QHeaderView *verticalHeader = ui->suggestionsTable->verticalHeader();
+  verticalHeader->setSectionResizeMode(QHeaderView::Fixed);
+  verticalHeader->setDefaultSectionSize(48);
 
   connect(ui->suggestionsTable, &ClickTable::emptySpaceClicked, [=] {
     ui->urlBar->clearFocus();

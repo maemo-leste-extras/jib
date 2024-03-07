@@ -60,8 +60,8 @@ int main(int argc, char *argv[]) {
   auto *ctx = new AppContext();
 #ifdef DEBUG
   ctx->isDebug = true;
+#endif
   auto windowManager = new WindowManager(ctx);
   windowManager->spawn();
-#endif
   return QApplication::exec();
 }

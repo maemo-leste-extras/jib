@@ -1,3 +1,10 @@
+jib (0.4.2) unstable; urgency=medium
+
+  - Move bottom bar to QMenu
+  - Put the back/forward buttons in the URL bar
+
+ -- Sander <sander@kroket.io>  Thu, 7 Mar 2024 20:34:36 +0100
+
 jib (0.4.1) unstable; urgency=medium
 
   - multi-window support

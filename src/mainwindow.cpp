@@ -29,20 +29,23 @@ MainWindow::MainWindow(AppContext *ctx, QString window_id, QWidget *parent) :
 
   this->showWebview();
 
+  // menu
+  connect(ui->actionSettings, &QAction::triggered, this, &MainWindow::showSettingsview);
+  connect(ui->actionNew_window, &QAction::triggered, this, &MainWindow::newWindowClicked);
+  connect(ui->actionReload_page, &QAction::triggered, ui->widgetWeb, &WebWidget::onReloadClicked);
+  connect(ui->actionToggle_navigation, &QAction::triggered, ui->widgetWeb, &WebWidget::onToggleNavigation);
   connect(ui->actionExit, &QAction::triggered, this, &MainWindow::onQuitApplication);
+  // @TODO: enable when fullscreen bug is fixed; void onFullscreen() {
+  //     is_fullscreen ? this->showNormal() : this->showFullScreen();
+  //    is_fullscreen = !is_fullscreen;
+  // }
 
   // popular sites
   connect(m_ctx->popularSites, &PopularSites::dataChanged, this->ui->widgetWeb, &WebWidget::onPopularSitesChanged);
   m_ctx->popularSites->start();
 
   // web connects
-  connect(ui->widgetWeb, &WebWidget::newWindowClicked, this, &MainWindow::newWindowClicked);
   connect(ui->widgetWeb, &WebWidget::windowTitleChanged, this, &MainWindow::setWindowTitle);
-  connect(ui->widgetWeb, &WebWidget::settingsClicked, this, &MainWindow::showSettingsview);
-  connect(ui->widgetWeb, &WebWidget::fullscreenClicked, [=] {
-    is_fullscreen ? this->showNormal() : this->showFullScreen();
-    is_fullscreen = !is_fullscreen;
-  });
 
   // about connects
   connect(ui->widgetAbout, &AboutWidget::backClicked, this, &MainWindow::showSettingsview);

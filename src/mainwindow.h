@@ -66,6 +66,7 @@ signals:
   void windowCountChanged(int count);
   void newWindowClicked();
   void windowClosed(QString window_id);
+  void reloadClicked();
 
 protected:
   void closeEvent(QCloseEvent *event);

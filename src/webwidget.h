@@ -43,16 +43,12 @@ public:
   ~WebWidget();
 
 signals:
-  void fullscreenClicked();
-  void settingsClicked();
-  void newWindowClicked();
   void windowTitleChanged(const QString &title);
   void visit(QString url);
   void urlClicked(const QString &url);
 
 public slots:
   void onSetUserAgent(const QString &user_agent);
-  void setBottomBarHighlights();
   void favIconChanged(const QIcon &icon);
   void onVisitUrl(const QString &url);
   void onJSEnabledChanged(bool status);
@@ -63,6 +59,8 @@ public slots:
   void onZoomFactorChanged(double amount);
   void onPopularSitesChanged();
   void onWindowCountChanged(int count);
+  void onReloadClicked();
+  void onToggleNavigation();
 
 private:
   void showContextMenu(const QPoint &pos);

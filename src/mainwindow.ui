@@ -54,6 +54,10 @@
     <property name="title">
      <string>w00t</string>
     </property>
+    <addaction name="actionSettings"/>
+    <addaction name="actionNew_window"/>
+    <addaction name="actionReload_page"/>
+    <addaction name="actionToggle_navigation"/>
     <addaction name="actionAbout"/>
     <addaction name="actionExit"/>
    </widget>
@@ -67,6 +71,26 @@
   <action name="actionExit">
    <property name="text">
     <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionReload_page">
+   <property name="text">
+    <string>Reload page</string>
+   </property>
+  </action>
+  <action name="actionNew_window">
+   <property name="text">
+    <string>New window</string>
+   </property>
+  </action>
+  <action name="actionToggle_navigation">
+   <property name="text">
+    <string>Toggle navigation</string>
+   </property>
+  </action>
+  <action name="actionSettings">
+   <property name="text">
+    <string>Settings</string>
    </property>
   </action>
  </widget>

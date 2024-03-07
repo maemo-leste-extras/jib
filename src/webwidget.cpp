@@ -19,6 +19,8 @@ WebWidget::WebWidget(QWidget *parent) :
   ui->setupUi(this);
 
   m_ctx = MainWindow::getContext();
+  auto iconFont = m_ctx->iconFont();
+  iconFont.setPointSize(16);
   auto mainWindow = MainWindow::getInstance();
 
   ui->webView->grabGesture(Qt::SwipeGesture);
@@ -27,7 +29,21 @@ WebWidget::WebWidget(QWidget *parent) :
   ui->webView->show();
   ui->webView->page()->profile()->setSpellCheckEnabled(false);
 
-  // security, user-settings
+  // urlbar buttons
+  ui->btnURLBack->setFont(iconFont);
+  ui->btnURLBack->setText("\uE80D");
+  ui->btnURLForward->setFont(iconFont);
+  ui->btnURLForward->setText("\uE80E");
+
+  connect(ui->btnURLBack, &QPushButton::clicked, [=] {
+    ui->webView->triggerPageAction(QWebEnginePage::WebAction::Back);
+  });
+
+  connect(ui->btnURLForward, &QPushButton::clicked, [=] {
+    ui->webView->triggerPageAction(QWebEnginePage::WebAction::Forward);
+  });
+
+  // user-settings
   ui->webView->settings()->setAttribute(QWebEngineSettings::JavascriptCanOpenWindows, false);
   ui->webView->settings()->setAttribute(QWebEngineSettings::JavascriptCanAccessClipboard, false);
   auto allowInsecure = config()->get(ConfigKeys::allowInsecureContent).toBool();
@@ -44,9 +60,6 @@ WebWidget::WebWidget(QWidget *parent) :
   auto user_agent = config()->get(ConfigKeys::ua).toString();
   this->onSetUserAgent(user_agent);
 
-  QPixmap p_general_search("/usr/share/icons/hicolor/48x48/hildon/general_search.png");
-  ui->iconSearch->setPixmap(p_general_search);
-
   ui->urlBar->setStyleSheet("QLineEdit { background-color: #8e8e8e; padding-left: 8px; border-radius: 8px; padding-bottom:2px; }");
   this->setStyleSheet("background-color: #575757;");
 
@@ -59,36 +72,10 @@ WebWidget::WebWidget(QWidget *parent) :
     }
   });
 
-  connect(ui->btnFullscreen, &QPushButton::clicked, [=] {
-    emit fullscreenClicked();
-    this->setBottomBarHighlights();
-  });
-
   connect(ui->urlBar, &QLineEdit::textChanged, this, [=](QString text) {
     if(!text.isEmpty() && text.length() > 2 && !text.startsWith("about:"))
       m_ctx->suggestionModel->search(text);
   });
-
-  connect(ui->btnBack, &QPushButton::clicked, [=] {
-    ui->webView->triggerPageAction(QWebEnginePage::WebAction::Back);
-  });
-
-  connect(ui->btnForward, &QPushButton::clicked, [=] {
-    ui->webView->triggerPageAction(QWebEnginePage::WebAction::Forward);
-  });
-
-  connect(ui->btnReload, &QPushButton::clicked, ui->webView, &QWebEngineView::reload);
-  connect(ui->btnSettings, &QPushButton::clicked, [=] {
-    emit settingsClicked();
-  });
-
-  connect(ui->btnWindows, &QPushButton::clicked, [=] {
-    emit newWindowClicked();
-  });
-
-//  connect(ui->webView, &QWebEngineView::titleChanged, [=](const QString &title) {
-//    qDebug() << "new title: " << title;
-//  });
 
   connect(ui->webView, &QWebEngineView::urlChanged, [=](const QUrl &url) {
     auto _url = url.toString();
@@ -148,22 +135,8 @@ WebWidget::WebWidget(QWidget *parent) :
     showWebview();
   });
 
-  connect(ui->btnNav, &QPushButton::clicked, [=] {
-    if(m_showing_navscreen) {
-      ui->frameNav->hide();
-    } else {
-      ui->frameNav->show();
-      ui->urlBar->setFocus();
-      ui->urlBar->selectAll();
-    }
-
-    m_showing_navscreen = !m_showing_navscreen;
-    this->setBottomBarHighlights();
-  });
-
   connect(ui->webView, &QWebEngineView::iconChanged, this, &WebWidget::favIconChanged);
 
-  this->setBottomBarHighlights();
   this->showSplash();
 
   ui->suggestionsTable->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
@@ -203,25 +176,6 @@ WebWidget::WebWidget(QWidget *parent) :
   connect(this, &WebWidget::urlClicked, this, &WebWidget::onVisitUrl);
 
   showWebview();
-
-  // button icons
-  auto iconFont = m_ctx->iconFont();
-  iconFont.setPointSize(16);
-  ui->btnSettings->setFont(iconFont);
-  ui->btnSettings->setText(QChar(0xE804));
-  ui->btnNav->setFont(iconFont);
-  ui->btnNav->setText(QChar(0xE80B));
-  ui->btnFullscreen->setFont(iconFont);
-  ui->btnFullscreen->setText(QChar(0xF108));
-  ui->btnFullscreen->hide();
-  ui->lineFullscreen->hide();
-  //ui->lineWindows->hide();
-  ui->btnReload->setFont(iconFont);
-  ui->btnReload->setText(QChar(0xE80C));
-  ui->btnBack->setFont(iconFont);
-  ui->btnBack->setText(QChar(0xE80D));
-  ui->btnForward->setFont(iconFont);
-  ui->btnForward->setText(QChar(0xE80E));
 
   m_zoomTimer->setInterval(1000);
   auto zoomFactor = config()->get(ConfigKeys::zoomFactor).toDouble();
@@ -335,20 +289,6 @@ void WebWidget::showContextMenu(const QPoint &pos) {
 //    m_contextMenu->exec(ui->webView->viewport()->mapToGlobal(pos));
 }
 
-void WebWidget::setBottomBarHighlights() {
-  auto activeColor = "color: lightblue;";
-  auto inactiveColor = "color: transparent;";
-
-  auto mainWindow = MainWindow::getInstance();
-  ui->lineSettings->setStyleSheet(inactiveColor);
-  ui->lineNav->setStyleSheet(m_showing_navscreen ? activeColor : inactiveColor);
-  ui->lineFullscreen->setStyleSheet(mainWindow->is_fullscreen ? activeColor : inactiveColor);
-  ui->lineBack->setStyleSheet(inactiveColor);
-  ui->lineForward->setStyleSheet(inactiveColor);
-  ui->lineReload->setStyleSheet(inactiveColor);
-  ui->lineWindows->setStyleSheet(inactiveColor);
-}
-
 void WebWidget::onZoomFactorChanged(double amount) {
   ui->webView->setZoomFactor(amount);
 }
@@ -410,8 +350,22 @@ void WebWidget::setZoomFactor() {
   ui->webView->setZoomFactor(zoomFactor / 100);
 }
 
-void WebWidget::onWindowCountChanged(int count) {
-  ui->btnWindows->setText(QString::number(count));
+void WebWidget::onWindowCountChanged(int count) {}
+
+void WebWidget::onReloadClicked() {
+  ui->webView->reload();
+}
+
+void WebWidget::onToggleNavigation() {
+  if(m_showing_navscreen) {
+    ui->frameNav->hide();
+  } else {
+    ui->frameNav->show();
+    ui->urlBar->setFocus();
+    ui->urlBar->selectAll();
+  }
+
+  m_showing_navscreen = !m_showing_navscreen;
 }
 
 WebWidget::~WebWidget() {

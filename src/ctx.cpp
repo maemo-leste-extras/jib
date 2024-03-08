@@ -9,7 +9,7 @@
 
 using namespace std::chrono;
 
-AppContext::AppContext() {
+AppContext::AppContext(QCommandLineParser *cmdargs) : cmdargs(cmdargs) {
   configRoot = QDir::homePath();
   isDebug = false;
   homeDir = QDir::homePath();

@@ -33,7 +33,7 @@ class MainWindow : public QMainWindow
   Q_OBJECT
 
 public:
-  explicit MainWindow(AppContext *ctx, QString window_id, QWidget *parent = nullptr);
+  explicit MainWindow(AppContext *ctx, QString window_id, QString url, QWidget *parent = nullptr);
   static AppContext *getContext();
   static MainWindow *getInstance();
   void setupUIModels();

@@ -3,7 +3,7 @@
 
 MainWindow * MainWindow::pMainWindow = nullptr;
 
-MainWindow::MainWindow(AppContext *ctx, QString window_id, QWidget *parent) :
+MainWindow::MainWindow(AppContext *ctx, QString window_id, QString url, QWidget *parent) :
     QMainWindow(parent),
     m_ctx(ctx),
     m_window_id(window_id),
@@ -71,6 +71,9 @@ MainWindow::MainWindow(AppContext *ctx, QString window_id, QWidget *parent) :
   connect(ui->widgetSettings, &SettingsWidget::allowWebGLChanged, ui->widgetWeb, &WebWidget::onAllowWebGLEnabled);
 
   connect(this, &MainWindow::windowCountChanged, ui->widgetWeb, &WebWidget::onWindowCountChanged);
+
+  if(!url.isEmpty())
+    ui->widgetWeb->onVisitUrl(url);
 }
 
 void MainWindow::onWindowCountChanged(int count) {

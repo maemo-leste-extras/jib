@@ -15,8 +15,15 @@ void WindowManager::onWindowClosed(QString window_id) {
 }
 
 void WindowManager::spawn() {
+  QString url = "";
+
+  // visit argv[1]
+  auto args = m_ctx->cmdargs->positionalArguments();
+  if(!args.isEmpty() && windows.isEmpty() && args.at(0).startsWith("http"))
+    url = args.at(0);
+
   auto window_id = QString::number(QDateTime::currentSecsSinceEpoch());
-  auto window = new MainWindow(m_ctx, window_id);
+  auto window = new MainWindow(m_ctx, window_id, url);
   connect(window, &MainWindow::newWindowClicked, this, &WindowManager::spawn);
   connect(window, &MainWindow::windowClosed, this, &WindowManager::onWindowClosed);
 

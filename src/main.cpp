@@ -50,14 +50,20 @@ int main(int argc, char *argv[]) {
   QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
   QApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
   QApplication::setApplicationName("jib");
-  QApplication::setOrganizationDomain("kroket.io");
-  QApplication::setOrganizationName("Kroket Ltd.");
+  QApplication::setOrganizationDomain("https://maemo-leste.github.io/");
+  QApplication::setOrganizationName("Maemo Leste");
   QApplication app(argc, argv);
+
+  QCommandLineParser parser;
+  parser.addHelpOption();
+  parser.addVersionOption();
+  parser.setApplicationDescription("Web");
+  parser.process(app);
 
   qDebug() << "SSL version: " << QSslSocket::sslLibraryVersionString();
   qDebug() << "SSL build: " << QSslSocket::sslLibraryBuildVersionString();
 
-  auto *ctx = new AppContext();
+  auto *ctx = new AppContext(&parser);
 #ifdef DEBUG
   ctx->isDebug = true;
 #endif

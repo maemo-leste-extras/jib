@@ -25,11 +25,12 @@ class AppContext : public QObject {
 Q_OBJECT
 
 public:
-  explicit AppContext();
+  explicit AppContext(QCommandLineParser *cmdargs);
   ~AppContext() override;
 
   double zoomFactor = 1.0;
   bool isDebug;
+  QCommandLineParser *cmdargs;
   QString preloadModel;
   QString configDirectory;
   QString iconCacheDirectory;

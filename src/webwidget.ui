@@ -71,12 +71,15 @@
          <widget class="QPushButton" name="btnURLBack">
           <property name="maximumSize">
            <size>
-            <width>48</width>
+            <width>64</width>
             <height>16777215</height>
            </size>
           </property>
           <property name="text">
            <string>B</string>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -84,12 +87,15 @@
          <widget class="QPushButton" name="btnURLForward">
           <property name="maximumSize">
            <size>
-            <width>48</width>
+            <width>64</width>
             <height>16777215</height>
            </size>
           </property>
           <property name="text">
            <string>F</string>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
           </property>
          </widget>
         </item>

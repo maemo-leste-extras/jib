@@ -34,9 +34,6 @@
      <widget class="HistoryWidget" name="widgetHistory" native="true"/>
     </item>
     <item>
-     <widget class="SettingsWidget" name="widgetSettings" native="true"/>
-    </item>
-    <item>
      <widget class="WebWidget" name="widgetWeb" native="true"/>
     </item>
    </layout>
@@ -106,12 +103,6 @@
    <class>HistoryWidget</class>
    <extends>QWidget</extends>
    <header>historywidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>SettingsWidget</class>
-   <extends>QWidget</extends>
-   <header>settingswidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>

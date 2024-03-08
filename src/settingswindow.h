@@ -17,28 +17,29 @@
 #include "ctx.h"
 
 namespace Ui {
-  class SettingsWidget;
+  class SettingsWindow;
 }
 
-class SettingsWidget : public QWidget
+class SettingsWindow : public QMainWindow
 {
 Q_OBJECT
 
 public:
-  explicit SettingsWidget(QWidget *parent = nullptr);
-  ~SettingsWidget();
+  explicit SettingsWindow(QWidget *parent = nullptr);
+  ~SettingsWindow();
 
 signals:
+  void windowClosing();
   void setUserAgent(QString user_agent);
   void zoomChanged(double zoomFactor);
-  void backClicked();
-  void historyClicked();
-  void aboutClicked();
   void JSEnabledChanged(bool status);
   void allowPDFViewerChanged(bool status);
   void allowInsecureContentChanged(bool status);
   void allowScrollbarChanged(bool status);
   void allowWebGLChanged(bool status);
+
+protected:
+    void closeEvent(QCloseEvent* event);
 
 private slots:
   void onZoomChanged(int idx);
@@ -51,5 +52,5 @@ private slots:
 
 private:
   AppContext *m_ctx;
-  Ui::SettingsWidget *ui;
+  Ui::SettingsWindow *ui;
 };

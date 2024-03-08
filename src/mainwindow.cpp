@@ -12,6 +12,7 @@ MainWindow::MainWindow(AppContext *ctx, QString window_id, QString url, QWidget 
 {
   pMainWindow = this;
   ui->setupUi(this);
+  this->setAttribute(Qt::WA_DeleteOnClose);
   ui->menuBar->hide();
 
 #ifdef MAEMO
@@ -30,10 +31,10 @@ MainWindow::MainWindow(AppContext *ctx, QString window_id, QString url, QWidget 
   this->showWebview();
 
   // menu
-  connect(ui->actionSettings, &QAction::triggered, this, &MainWindow::showSettingsview);
   connect(ui->actionNew_window, &QAction::triggered, this, &MainWindow::newWindowClicked);
   connect(ui->actionReload_page, &QAction::triggered, ui->widgetWeb, &WebWidget::onReloadClicked);
   connect(ui->actionToggle_navigation, &QAction::triggered, ui->widgetWeb, &WebWidget::onToggleNavigation);
+  connect(ui->actionSettings, &QAction::triggered, this, &MainWindow::settingsClicked);
   connect(ui->actionExit, &QAction::triggered, this, &MainWindow::onQuitApplication);
   // @TODO: enable when fullscreen bug is fixed; void onFullscreen() {
   //     is_fullscreen ? this->showNormal() : this->showFullScreen();
@@ -46,29 +47,17 @@ MainWindow::MainWindow(AppContext *ctx, QString window_id, QString url, QWidget 
 
   // web connects
   connect(ui->widgetWeb, &WebWidget::windowTitleChanged, this, &MainWindow::setWindowTitle);
-
-  // about connects
-  connect(ui->widgetAbout, &AboutWidget::backClicked, this, &MainWindow::showSettingsview);
   connect(ui->widgetAbout, &AboutWidget::urlClicked, ui->widgetWeb, &WebWidget::onVisitUrl);
   connect(ui->widgetAbout, &AboutWidget::urlClicked, this, &MainWindow::showWebview);
 
-  // history connects
-  connect(ui->widgetHistory, &HistoryWidget::urlClicked, ui->widgetWeb, &WebWidget::onVisitUrl);
-  connect(ui->widgetHistory, &HistoryWidget::urlClicked, this, &MainWindow::showWebview);
-  connect(ui->widgetHistory, &HistoryWidget::backClicked, this, &MainWindow::showSettingsview);
-
   // settings connects
-  connect(ui->widgetSettings, &SettingsWidget::historyClicked, this, &MainWindow::showHistoryview);
-  connect(ui->widgetSettings, &SettingsWidget::backClicked, this, &MainWindow::showWebview);
-  connect(ui->widgetSettings, &SettingsWidget::aboutClicked, this, &MainWindow::showAboutview);
-  connect(ui->widgetSettings, &SettingsWidget::zoomChanged, ui->widgetWeb, &WebWidget::onZoomFactorChanged);
-  connect(ui->widgetSettings, &SettingsWidget::JSEnabledChanged, ui->widgetWeb, &WebWidget::onJSEnabledChanged);
-  connect(ui->widgetSettings, &SettingsWidget::setUserAgent, ui->widgetWeb, &WebWidget::onSetUserAgent);
-  connect(ui->widgetSettings, &SettingsWidget::backClicked, this, &MainWindow::showWebview);
-  connect(ui->widgetSettings, &SettingsWidget::allowInsecureContentChanged, ui->widgetWeb, &WebWidget::onAllowInsecureContentChanged);
-  connect(ui->widgetSettings, &SettingsWidget::allowPDFViewerChanged, ui->widgetWeb, &WebWidget::onAllowPDFViewerChanged);
-  connect(ui->widgetSettings, &SettingsWidget::allowScrollbarChanged, ui->widgetWeb, &WebWidget::onAllowScrollbarChanged);
-  connect(ui->widgetSettings, &SettingsWidget::allowWebGLChanged, ui->widgetWeb, &WebWidget::onAllowWebGLEnabled);
+  connect(this, &MainWindow::zoomChanged, ui->widgetWeb, &WebWidget::onZoomFactorChanged);
+  connect(this, &MainWindow::JSEnabledChanged, ui->widgetWeb, &WebWidget::onJSEnabledChanged);
+  connect(this, &MainWindow::setUserAgent, ui->widgetWeb, &WebWidget::onSetUserAgent);
+  connect(this, &MainWindow::allowInsecureContentChanged, ui->widgetWeb, &WebWidget::onAllowInsecureContentChanged);
+  connect(this, &MainWindow::allowPDFViewerChanged, ui->widgetWeb, &WebWidget::onAllowPDFViewerChanged);
+  connect(this, &MainWindow::allowScrollbarChanged, ui->widgetWeb, &WebWidget::onAllowScrollbarChanged);
+  connect(this, &MainWindow::allowWebGLChanged, ui->widgetWeb, &WebWidget::onAllowWebGLEnabled);
 
   connect(this, &MainWindow::windowCountChanged, ui->widgetWeb, &WebWidget::onWindowCountChanged);
 
@@ -92,12 +81,6 @@ void MainWindow::showHistoryview() {
   setWindowTitle(QCoreApplication::applicationName() + "- History");
 }
 
-void MainWindow::showSettingsview() {
-  this->resetView();
-  ui->widgetSettings->show();
-  setWindowTitle(QCoreApplication::applicationName() + "- Settings");
-}
-
 void MainWindow::showAboutview() {
   this->resetView();
   ui->widgetAbout->show();
@@ -106,7 +89,6 @@ void MainWindow::showAboutview() {
 void MainWindow::resetView() {
   ui->widgetWeb->hide();
   ui->widgetHistory->hide();
-  ui->widgetSettings->hide();
   ui->widgetAbout->hide();
 }
 

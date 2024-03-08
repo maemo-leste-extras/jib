@@ -188,6 +188,7 @@ WebWidget::WebWidget(QWidget *parent) :
   m_zoomTimer->start();
 
   onPopularSitesChanged();
+  showSuggestions();
 }
 
 void WebWidget::popularItemsClear() {

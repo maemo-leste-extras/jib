@@ -1,3 +1,11 @@
+jib (0.4.5) unstable; urgency=medium
+
+  - Move settings to a separate window
+  - Show suggestions on about:blank default
+  - Cleanup/delete windows correctly, avoiding leaks
+
+ -- Sander <sander@kroket.io>  Fri, 8 Mar 2024 20:35:36 +0100
+
 jib (0.4.4) unstable; urgency=medium
 
   - Pass URL via argv[1] for mime handlers

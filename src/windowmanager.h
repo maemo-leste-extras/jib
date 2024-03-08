@@ -4,15 +4,18 @@
 
 #include "ctx.h"
 #include "mainwindow.h"
+#include "settingswindow.h"
 
 class WindowManager : public QObject {
   Q_OBJECT
 
 public:
-  explicit WindowManager(AppContext *ctx);
+  explicit WindowManager(AppContext *ctx, QWidget* parent = nullptr);
   ~WindowManager() override;
 
-  void spawn();
+public slots:
+  void onSpawn();
+  void onSpawnSettings();
 
 signals:
   void windowCountChanged(int count);
@@ -22,5 +25,6 @@ private slots:
 
 private:
   QMap<QString, MainWindow*> windows;
+  SettingsWindow* m_settingsWindow = nullptr;
   AppContext *m_ctx;
 };

@@ -55,7 +55,8 @@ QPixmap AppContext::getThumbPixmap(const QString &domain, int height, int width)
 }
 
 QIcon* AppContext::getThumbIcon(const QString &domain) {
-  if(m_cacheIcons.contains(domain)) return m_cacheIcons[domain];
+  if(m_cacheIcons.contains(domain))
+    return m_cacheIcons[domain];
 
   auto domain_md5 = Utils::to_md5(domain);
   auto path = this->iconCacheDirectory + "/" + domain_md5 + ".png";

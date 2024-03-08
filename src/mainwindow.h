@@ -54,11 +54,9 @@ public:
 
   bool is_fullscreen = false;
 
-public slots:
   void onQuitApplication();
   void showWebview();
   void showHistoryview();
-  void showSettingsview();
   void showAboutview();
   void onWindowCountChanged(int count);
 
@@ -66,7 +64,16 @@ signals:
   void windowCountChanged(int count);
   void newWindowClicked();
   void windowClosed(QString window_id);
+  void settingsClicked();
   void reloadClicked();
+
+  void setUserAgent(QString user_agent);
+  void zoomChanged(double zoomFactor);
+  void JSEnabledChanged(bool status);
+  void allowPDFViewerChanged(bool status);
+  void allowInsecureContentChanged(bool status);
+  void allowScrollbarChanged(bool status);
+  void allowWebGLChanged(bool status);
 
 protected:
   void closeEvent(QCloseEvent *event);

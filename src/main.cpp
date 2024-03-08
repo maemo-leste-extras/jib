@@ -68,6 +68,6 @@ int main(int argc, char *argv[]) {
   ctx->isDebug = true;
 #endif
   auto windowManager = new WindowManager(ctx);
-  windowManager->spawn();
+  windowManager->onSpawn();
   return QApplication::exec();
 }

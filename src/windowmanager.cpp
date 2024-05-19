@@ -21,7 +21,7 @@ void WindowManager::onSpawn() {
 
   // visit argv[1]
   auto args = m_ctx->cmdargs->positionalArguments();
-  if(!args.isEmpty() && windows.isEmpty() && args.at(0).startsWith("http"))
+  if(!args.isEmpty() && windows.isEmpty() && (args.at(0).startsWith("http") || args.at(0).startsWith("file:")))
     url = args.at(0);
 
   auto window_id = QString::number(QDateTime::currentSecsSinceEpoch());

@@ -79,7 +79,7 @@ WebWidget::WebWidget(QWidget *parent) :
 
   connect(ui->webView, &QWebEngineView::urlChanged, [=](const QUrl &url) {
     auto _url = url.toString();
-    if(_url.startsWith("data:") || _url.startsWith("about:"))
+    if(_url.startsWith("data:") || _url.startsWith("about:") || _url.startsWith("file:"))
       return;
 
     auto title = ui->webView->title();
@@ -116,14 +116,15 @@ WebWidget::WebWidget(QWidget *parent) :
   connect(ui->urlBar, &QLineEdit::returnPressed, [=]{
     auto url = ui->urlBar->text().trimmed();
     if(!url.startsWith("http://") && !url.startsWith("https://") && url != "about:blank") {
-      if(!url.contains(".")) {
+      if(!url.contains(".") && !url.startsWith("file:")) {
         auto duck = QString("https://duckduckgo.com/?q=%1").arg(url);
         ui->webView->load(QUrl(duck));
         showWebview();
         return;
       }
 
-      url = "http://" + url;
+      if(!url.startsWith("file:"))
+        url = "http://" + url;
     }
 
     ui->webView->load(QUrl(url));

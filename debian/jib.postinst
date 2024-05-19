@@ -1,0 +1,11 @@
+#!/bin/sh
+set -e
+case "$1" in
+    configure)
+        update-alternatives --install /usr/bin/x-www-browser \
+            x-www-browser /usr/bin/jib 100 \
+        ;;
+esac
+
+exit 0
+

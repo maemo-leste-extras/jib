@@ -14,6 +14,8 @@ SettingsWindow::SettingsWindow(QWidget *parent) :
   ui->setupUi(this);
   this->setAttribute(Qt::WA_DeleteOnClose);
 
+  setProperty("X-Maemo-Orientation", 2);
+
   m_ctx = MainWindow::getContext();
 
   // prepare UI from user config

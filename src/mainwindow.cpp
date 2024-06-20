@@ -14,6 +14,8 @@ MainWindow::MainWindow(AppContext *ctx, QString window_id, QString url, QWidget 
   ui->setupUi(this);
   this->setAttribute(Qt::WA_DeleteOnClose);
 
+  setProperty("X-Maemo-Orientation", 2);
+
   this->screenDpiRef = 128;
   this->screenGeo = QApplication::primaryScreen()->availableGeometry();
   this->screenRect = QGuiApplication::primaryScreen()->geometry();

@@ -13,11 +13,6 @@ MainWindow::MainWindow(AppContext *ctx, QString window_id, QString url, QWidget 
   pMainWindow = this;
   ui->setupUi(this);
   this->setAttribute(Qt::WA_DeleteOnClose);
-  ui->menuBar->hide();
-
-#ifdef MAEMO
-  this->ui->menuBar->hide();
-#endif
 
   this->screenDpiRef = 128;
   this->screenGeo = QApplication::primaryScreen()->availableGeometry();

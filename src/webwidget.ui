@@ -31,6 +31,12 @@
    </property>
    <item>
     <widget class="QFrame" name="frameNav">
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>56</height>
+      </size>
+     </property>
      <property name="frameShape">
       <enum>QFrame::NoFrame</enum>
      </property>
@@ -62,7 +68,7 @@
          <number>6</number>
         </property>
         <property name="topMargin">
-         <number>6</number>
+         <number>2</number>
         </property>
         <property name="bottomMargin">
          <number>6</number>

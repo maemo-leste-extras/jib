@@ -16,6 +16,7 @@
 #include <QFontDatabase>
 
 #include "lib/config.h"
+#include "lib/adblock/AdBlockManager.h"
 #include "historymodel.h"
 #include "popularitymodel.h"
 #include "suggestionmodel.h"
@@ -33,6 +34,7 @@ public:
   QCommandLineParser *cmdargs;
   QString preloadModel;
   QString configDirectory;
+  QString adblockDirectory;
   QString iconCacheDirectory;
   QString configRoot;
   QString homeDir;
@@ -45,6 +47,7 @@ public:
   QString uaMobile = "Mozilla/5.0 (Linux; Android 10; SM-A205U) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.5938.60 Mobile Safari/537.36";
   QString ua = uaMobile;
 
+  adblock::AdBlockManager *adblock;
   HistoryModel *historyModel;
   PopularSites *popularSites;
   SuggestionModel *suggestionModel;
@@ -63,6 +66,6 @@ public:
 
 private:
   int m_fonts;
-  void createConfigDirectory(const QString &dir);
+  void createConfigDirectories(QStringList dirs);
   QMap<QString, QIcon*> m_cacheIcons;
 };

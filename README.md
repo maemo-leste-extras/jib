@@ -7,6 +7,7 @@ Jib is a simple web-browser for Maemo Leste.
 - Chromium based
 - Qt 5.15, CMake, CCache
 - QtWidgets
+- Adblock (uBlockOrigin)
 
 ```text
 sudo apt install -y jib
@@ -24,6 +25,18 @@ sudo apt install -y jib
 | ShowScrollBars              | Show/hide scroll bars in the webview.                                                                                                                    |
 | WebGLEnabled                | Enables WebGL, default off                                                                                                                               |
 
+### Adblock
+
+The following filters are available and can be configured individually:
+
+- Filters: The regular filters from uBlockOrigin
+- ~~I don't care about cookies: Dismiss cookie popups~~ (bug: white screen, disabled for now)
+- Privacy: Filters for enhanced privacy
+- Resource Abuse: foil sites potentially abusing CPU/bandwidth resources without informed consent
+- Unbreak: Unbreak sites broken as a result of 3rd-party filter lists enabled by default
+
+To update filters, see: `src/assets/adblock/rules/update.sh`
+
 ### Manual installation
 
 Compilation on a Droid 4 is quite fast, around 3min.
@@ -35,15 +48,8 @@ make -Cbuild -j2
 ./build/bin/jib
 ```
 
-### Notes
-
-- The application takes 6 seconds to boot on Droid 4
-- Tabs/multiple-windows not supported
-- Browser extensions/plugins are not supported (See [QWebEngineView](https://doc.qt.io/qt-5/qtwebengine-overview.html)).
-
 ### To-do
 
-The following features are not supported, but maybe they'll be implemented at a later date:
+The following feature(s) are not supported, but to be implemented:
 
-- AdBlock
 - Password Manager

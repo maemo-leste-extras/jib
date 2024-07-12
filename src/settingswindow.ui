@@ -115,6 +115,55 @@
          </layout>
         </item>
         <item>
+         <widget class="QLabel" name="label_8">
+          <property name="font">
+           <font>
+            <pointsize>18</pointsize>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Adblock: uBlockOrigin</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="check_adblock_filters">
+          <property name="text">
+           <string>Filters</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="check_adblock_abp">
+          <property name="text">
+           <string>I don't care about cookies</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="check_adblock_privacy">
+          <property name="text">
+           <string>Privacy filters</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="check_adblock_abuse">
+          <property name="text">
+           <string>Resource abuse</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="check_adblock_unbreak">
+          <property name="text">
+           <string>Unbreak</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QLabel" name="label">
           <property name="font">
            <font>
@@ -518,12 +567,12 @@
   <slot>linkClicked()</slot>
  </slots>
  <buttongroups>
-  <buttongroup name="buttonGroup_6"/>
+  <buttongroup name="buttonGroup_7"/>
   <buttongroup name="buttonGroup_3"/>
   <buttongroup name="buttonGroup"/>
-  <buttongroup name="buttonGroup_5"/>
   <buttongroup name="buttonGroup_4"/>
+  <buttongroup name="buttonGroup_6"/>
   <buttongroup name="buttonGroup_2"/>
-  <buttongroup name="buttonGroup_7"/>
+  <buttongroup name="buttonGroup_5"/>
  </buttongroups>
 </ui>

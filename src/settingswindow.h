@@ -37,6 +37,11 @@ signals:
   void allowInsecureContentChanged(bool status);
   void allowScrollbarChanged(bool status);
   void allowWebGLChanged(bool status);
+  void adblockFiltersEnabledChanged(bool state);
+  void adblockAbpEnabledChanged(bool state);
+  void adblockPrivacyEnabledChanged(bool state);
+  void adblockAbuseEnabledChanged(bool state);
+  void adblockUnbreakEnabledChanged(bool state);
 
 protected:
     void closeEvent(QCloseEvent* event);

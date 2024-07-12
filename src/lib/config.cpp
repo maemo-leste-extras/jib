@@ -21,7 +21,13 @@ static const QHash<ConfigKeys::ConfigKey, ConfigDirective> configStrings = {
   {ConfigKeys::allowWebGL,{QS("allowWebGL"), true}},
   {ConfigKeys::allowInsecureContent,{QS("allowInsecureContent"), true}},
   {ConfigKeys::ua,{QS("ua"), "Mozilla/5.0 (Linux; Android 10; SM-A205U) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.5938.60 Mobile Safari/537.36"}},
-  {ConfigKeys::javascriptEnabled,{QS("javascriptEnabled"), true}}
+  {ConfigKeys::javascriptEnabled,{QS("javascriptEnabled"), true}},
+
+  {ConfigKeys::adblockFiltersEnabled,{QS("adblockFiltersEnabled"), true}},
+  {ConfigKeys::adblockAbpEnabled,{QS("adblockAbpEnabled"), false}},
+  {ConfigKeys::adblockPrivacyEnabled,{QS("adblockPrivacyEnabled"), false}},
+  {ConfigKeys::adblockAbuseEnabled,{QS("adblockAbuseEnabled"), false}},
+  {ConfigKeys::adblockUnbreakEnabled,{QS("adblockUnbreakEnabled"), false}}
 };
 
 QPointer<Config> Config::m_instance(nullptr);

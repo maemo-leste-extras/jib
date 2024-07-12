@@ -5,10 +5,120 @@
 #include <QDesktopServices>
 #include <QSizePolicy>
 
+#include "lib/RequestInterceptor.h"
+
 #include "mainwindow.h"
 #include "webwidget.h"
 #include "launchitemwidget.h"
 #include "ui_webwidget.h"
+
+WebPage::WebPage(adblock::AdBlockManager *adblock, QWebEngineProfile *profile, QObject *parent) :
+    QWebEnginePage(profile, parent),
+    m_adBlockManager(adblock),
+    m_originalUrl(),
+    m_mainFrameAdBlockScript(),
+    m_injectedAdblock(false),
+    m_permissionsAllowed(),
+    m_permissionsDenied()
+{
+  setUrlRequestInterceptor(new RequestInterceptor(adblock, this));
+
+  connect(this, &WebPage::loadFinished, this, &WebPage::onLoadFinished);
+  connect(this, &WebPage::loadProgress, this, [this](int progress) {
+    if (!m_injectedAdblock && progress >= 22 && progress < 100) {
+      m_injectedAdblock = true;
+      if (!m_mainFrameAdBlockScript.isEmpty())
+        runJavaScript(m_mainFrameAdBlockScript, QWebEngineScript::UserWorld);
+    }
+  });
+}
+
+void WebPage::onLoadFinished(bool ok)
+{
+  if (!ok)
+    return;
+
+  if (!m_originalUrl.isEmpty())
+    m_originalUrl = requestedUrl();
+
+  URL pageUrl(url());
+  if(pageUrl.toString().startsWith("data:"))
+    return;
+
+  QString adBlockStylesheet = m_adBlockManager->getStylesheet(pageUrl);
+  adBlockStylesheet.replace("'", "\\'");
+  runJavaScript(QString("document.body.insertAdjacentHTML('beforeend', '%1');").arg(adBlockStylesheet));
+
+  if (!m_mainFrameAdBlockScript.isEmpty())
+    runJavaScript(m_mainFrameAdBlockScript, QWebEngineScript::ApplicationWorld);
+}
+
+bool WebPage::acceptNavigationRequest(const QUrl &url, QWebEnginePage::NavigationType type, bool isMainFrame) {
+  if (!isMainFrame)
+    return QWebEnginePage::acceptNavigationRequest(url, type, isMainFrame);
+
+  m_injectedAdblock = false;
+  m_originalUrl = QUrl();
+
+  const QWebEngineSettings *pageSettings = settings();
+
+  if (type == QWebEnginePage::NavigationTypeLinkClicked) {
+    // If only change in URL is fragment, try to update URL bar by emitting url changed signal
+    if (this->url().toString(QUrl::RemoveFragment).compare(url.toString(QUrl::RemoveFragment)) == 0)
+        Q_EMIT urlChanged(url);
+  }
+
+  if (type != QWebEnginePage::NavigationTypeReload) {
+    URL pageUrl(url);
+    auto pageUrlStr = pageUrl.toString();
+
+    if(!pageUrlStr.startsWith("data:") && !pageUrlStr.startsWith("about:")) {
+      m_mainFrameAdBlockScript = m_adBlockManager->getDomainJavaScript(pageUrl);
+
+      QWebEngineScriptCollection &scriptCollection = scripts();
+      scriptCollection.clear();
+
+      if (!m_mainFrameAdBlockScript.isEmpty())
+      {
+          qDebug() << "injecting adBlockScript";
+          QWebEngineScript adBlockScript;
+          adBlockScript.setSourceCode(m_mainFrameAdBlockScript);
+          adBlockScript.setName(QLatin1String("jib-content-blocker-userworld"));
+          adBlockScript.setRunsOnSubFrames(true);
+          adBlockScript.setWorldId(QWebEngineScript::UserWorld);
+          adBlockScript.setInjectionPoint(QWebEngineScript::DocumentCreation);
+          scriptCollection.insert(adBlockScript);
+
+          // Inject into the DOM as a script tag
+          m_mainFrameAdBlockScript.replace(QString("\\"), QString("\\\\"));
+          m_mainFrameAdBlockScript.replace(QString("${"), QString("\\${"));
+          const static QString mutationScript = QStringLiteral("function selfInject() { "
+                                           "try { let script = document.createElement('script'); "
+                                           "script.appendChild(document.createTextNode(`%1`)); "
+                                           "if (document.head || document.documentElement) { (document.head || document.documentElement).appendChild(script); } "
+                                           "else { setTimeout(selfInject, 100); } "
+                                           " } catch(exc) { console.error('Could not run mutation script: ' + exc); } } selfInject();");
+          m_mainFrameAdBlockScript = mutationScript.arg(m_mainFrameAdBlockScript);
+      }
+
+      const QString domainFilterStyle = m_adBlockManager->getDomainStylesheet(pageUrl);
+      if (!domainFilterStyle.isEmpty()) {
+          QWebEngineScript adBlockCosmeticScript;
+          adBlockCosmeticScript.setRunsOnSubFrames(true);
+          adBlockCosmeticScript.setSourceCode(domainFilterStyle);
+          adBlockCosmeticScript.setName(QLatin1String("jib-cosmetic-blocker"));
+          adBlockCosmeticScript.setWorldId(QWebEngineScript::UserWorld);
+          adBlockCosmeticScript.setInjectionPoint(QWebEngineScript::DocumentCreation);
+          scriptCollection.insert(adBlockCosmeticScript);
+      }
+
+      if (type != QWebEnginePage::NavigationTypeBackForward)
+          m_originalUrl = url;
+    }
+  }
+
+  return true;
+}
 
 WebWidget::WebWidget(QWidget *parent) :
     QWidget(parent),
@@ -27,7 +137,17 @@ WebWidget::WebWidget(QWidget *parent) :
   this->installEventFilter(this);
 
   ui->webView->show();
-  ui->webView->page()->profile()->setSpellCheckEnabled(false);
+
+  // bool m_privateView = false;
+  // const std::string profileName = m_privateView ? "PrivateWebProfile" : "PublicWebProfile";
+  // QWebEngineProfile *profile = serviceLocator.getServiceAs<QWebEngineProfile>(profileName);
+
+  QWebEngineProfile *profile = new QWebEngineProfile("jib", this);
+  profile->setPersistentCookiesPolicy(QWebEngineProfile::ForcePersistentCookies);
+
+  m_page = new WebPage(m_ctx->adblock, profile, this);
+  ui->webView->setPage(m_page);
+  m_page->profile()->setSpellCheckEnabled(false);
 
   // urlbar buttons
   ui->btnURLBack->setFont(iconFont);
@@ -118,7 +238,7 @@ WebWidget::WebWidget(QWidget *parent) :
     if(!url.startsWith("http://") && !url.startsWith("https://") && url != "about:blank") {
       if(!url.contains(".") && !url.startsWith("file:")) {
         auto duck = QString("https://duckduckgo.com/?q=%1").arg(url);
-        ui->webView->load(QUrl(duck));
+        ui->webView->setUrl(QUrl(duck));
         showWebview();
         return;
       }
@@ -127,12 +247,12 @@ WebWidget::WebWidget(QWidget *parent) :
         url = "http://" + url;
     }
 
-    ui->webView->load(QUrl(url));
+    ui->webView->setUrl(QUrl(url));
     showWebview();
   });
 
   connect(this, &WebWidget::visit, [=](QString url){
-    ui->webView->load(QUrl(url));
+    ui->webView->setUrl(QUrl(url));
     showWebview();
   });
 
@@ -266,7 +386,7 @@ void WebWidget::showSplash() {
 }
 
 void WebWidget::onVisitUrl(const QString &url) {
-  ui->webView->load(QUrl(url));
+  ui->webView->setUrl(QUrl(url));
   showWebview();
 }
 
@@ -373,3 +493,4 @@ void WebWidget::onToggleNavigation() {
 WebWidget::~WebWidget() {
   delete ui;
 }
+

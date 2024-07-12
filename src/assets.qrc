@@ -7,5 +7,14 @@
         <file>assets/maemo.ico</file>
         <file>assets/fonts.ttf</file>
         <file>assets/maemo.png</file>
+        <file>assets/adblock/AdBlock.js</file>
+        <file>assets/adblock/AdBlockAliases.txt</file>
+        <file>assets/adblock/AdBlockResources.txt</file>
+
+        <file>assets/adblock/rules/abp.txt</file>
+        <file>assets/adblock/rules/filters.txt</file>
+        <file>assets/adblock/rules/privacy.txt</file>
+        <file>assets/adblock/rules/resource-abuse.txt</file>
+        <file>assets/adblock/rules/unbreak.txt</file>
     </qresource>
 </RCC>

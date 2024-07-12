@@ -15,12 +15,14 @@ AppContext::AppContext(QCommandLineParser *cmdargs) : cmdargs(cmdargs) {
   homeDir = QDir::homePath();
   configDirectory = QString("%1/.config/%2/").arg(configRoot, QCoreApplication::applicationName());
   iconCacheDirectory = configDirectory + "/cache/";
+  adblockDirectory = configDirectory + "/adblock/";
   dbFile = configDirectory + "/mbrowser.db";
 
-  this->createConfigDirectory(configDirectory);
-  this->createConfigDirectory(iconCacheDirectory);
+  this->createConfigDirectories({configDirectory, adblockDirectory, iconCacheDirectory});
   this->initdb();
 
+  adblock = new adblock::AdBlockManager(this);
+  adblock->loadSubscriptions();
   historyModel = new HistoryModel(this);
   popularSites = new PopularSites(&db, this);
   suggestionModel = new SuggestionModel(&db, this);
@@ -112,9 +114,8 @@ void AppContext::findDomainIcon(const QString &domain) {
   QSqlQuery query;
 }
 
-void AppContext::createConfigDirectory(const QString &dir) {
-  QStringList createDirs({dir});
-  for(const auto &d: createDirs) {
+void AppContext::createConfigDirectories(QStringList dirs) {
+  for(const auto &d: dirs) {
     if(!std::filesystem::exists(d.toStdString())) {
       qDebug() << QString("Creating directory: %1").arg(d);
       if (!QDir().mkpath(d))

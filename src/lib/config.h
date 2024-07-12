@@ -17,7 +17,12 @@ namespace ConfigKeys
         allowInsecureContent,
         allowPdfViewer,
         allowScrollbar,
-        allowWebGL
+        allowWebGL,
+        adblockFiltersEnabled,
+        adblockAbpEnabled,
+        adblockPrivacyEnabled,
+        adblockAbuseEnabled,
+        adblockUnbreakEnabled
     };
     Q_ENUM_NS(ConfigKey)
 }

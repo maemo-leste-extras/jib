@@ -73,6 +73,51 @@ SettingsWindow::SettingsWindow(QWidget *parent) :
   connect(ui->buttonGroup_5, &QButtonGroup::idClicked, this, &SettingsWindow::onAllowPDFViewerChanged);
   connect(ui->buttonGroup_6, &QButtonGroup::idClicked, this, &SettingsWindow::onAllowScrollbarChanged);
   connect(ui->buttonGroup_7, &QButtonGroup::idClicked, this, &SettingsWindow::onAllowWebGLChanged);
+
+  // adblock
+  auto adblockFiltersEnabled = config()->get(ConfigKeys::adblockFiltersEnabled).toBool();
+  auto adblockAbpEnabled = config()->get(ConfigKeys::adblockAbpEnabled).toBool();
+  auto adblockPrivacyEnabled = config()->get(ConfigKeys::adblockPrivacyEnabled).toBool();
+  auto adblockAbuseEnabled = config()->get(ConfigKeys::adblockAbuseEnabled).toBool();
+  auto adblockUnbreakEnabled = config()->get(ConfigKeys::adblockUnbreakEnabled).toBool();
+
+  ui->check_adblock_filters->setChecked(adblockFiltersEnabled);
+  ui->check_adblock_abp->setChecked(adblockAbpEnabled);
+  ui->check_adblock_privacy->setChecked(adblockPrivacyEnabled);
+  ui->check_adblock_abuse->setChecked(adblockAbuseEnabled);
+  ui->check_adblock_unbreak->setChecked(adblockUnbreakEnabled);
+
+  connect(ui->check_adblock_filters, &QCheckBox::stateChanged, [this](int state) {
+    auto checked = !state == 0;
+    config()->set(ConfigKeys::adblockFiltersEnabled, checked);
+    emit adblockFiltersEnabledChanged(checked);
+  });
+
+  //@TODO: abp doesnt work currently; white screen
+  ui->check_adblock_abp->hide();
+  connect(ui->check_adblock_abp, &QCheckBox::stateChanged, [this](int state) {
+    auto checked = !state == 0;
+    config()->set(ConfigKeys::adblockAbpEnabled, checked);
+    emit adblockAbpEnabledChanged(checked);
+  });
+
+  connect(ui->check_adblock_privacy, &QCheckBox::stateChanged, [this](int state) {
+    auto checked = !state == 0;
+    config()->set(ConfigKeys::adblockPrivacyEnabled, checked);
+    emit adblockPrivacyEnabledChanged(checked);
+  });
+
+  connect(ui->check_adblock_abuse, &QCheckBox::stateChanged, [this](int state) {
+    auto checked = !state == 0;
+    config()->set(ConfigKeys::adblockAbuseEnabled, checked);
+    emit adblockAbuseEnabledChanged(checked);
+  });
+
+  connect(ui->check_adblock_unbreak, &QCheckBox::stateChanged, [this](int state) {
+    auto checked = !state == 0;
+    config()->set(ConfigKeys::adblockUnbreakEnabled, checked);
+    emit adblockUnbreakEnabledChanged(checked);
+  });
 }
 
 void SettingsWindow::onJSChanged(int idx) {

@@ -5,6 +5,7 @@
 #include "ctx.h"
 #include "mainwindow.h"
 #include "settingswindow.h"
+#include "lib/adblock/AdBlockManager.h"
 
 class WindowManager : public QObject {
   Q_OBJECT

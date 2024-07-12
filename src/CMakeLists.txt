@@ -12,6 +12,10 @@ file(GLOB SOURCE_FILES
         "*.cpp"
         "lib/*.h"
         "lib/*.cpp"
+        "lib/adblock/*.h"
+        "lib/adblock/*.cpp"
+        "lib/public_suffix/*.h"
+        "lib/public_suffix/*.cpp"
         )
 
 # Find Qt. Use a CMake definition to point it to your Qt installation

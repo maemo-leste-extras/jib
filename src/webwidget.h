@@ -9,6 +9,8 @@
 #include <QWebEnginePage>
 #include <QWebEngineSettings>
 #include <QWebEngineProfile>
+#include <QWebEngineScript>
+#include <QWebEngineScriptCollection>
 #include <QStringListModel>
 #include <QGestureEvent>
 #include <QItemDelegate>
@@ -17,12 +19,50 @@
 #include <QFileInfo>
 
 #include "ctx.h"
+#include "lib/adblock/AdBlockManager.h"
 #include "lib/QClickFrame.h"
 #include "popularitymodel.h"
 
 namespace Ui {
   class WebWidget;
 }
+
+// namespace adblock {
+//   class AdBlockManager;
+// }
+
+class WebPage : public QWebEnginePage {
+  Q_OBJECT
+public:
+  WebPage(adblock::AdBlockManager *adblock, QWebEngineProfile *profile, QObject *parent = nullptr);
+  ~WebPage() = default;
+protected:
+  /// Called upon receiving a request to navigate to the specified url by means of the given navigation type. If the method returns true, the request is accepted
+  bool acceptNavigationRequest(const QUrl &url, NavigationType type, bool isMainFrame) override;
+private slots:
+  /// Called when a frame is finished loading
+  void onLoadFinished(bool ok);
+private:
+  /// Advertisement blocking system manager
+  adblock::AdBlockManager *m_adBlockManager;
+
+  /// Contains the original URL of the current page, as passed to the WebPage in the acceptNavigationRequest method
+  QUrl m_originalUrl;
+
+  /// Scripts injected by ad block during load progress and load finish
+  QString m_mainFrameAdBlockScript;
+
+  /// Flag indicating whether or not we need to inject the adblock script into the DOM
+  bool m_injectedAdblock;
+
+  /// Stores feature permissions that were allowed by the user, in the current session, local to this page.
+  /// TODO: Later we can extend this to persistent storage, across web pages, through a permission manager,
+  ///       but only if the user "opts-in" to it.
+  QHash<QUrl, std::vector<WebPage::Feature>> m_permissionsAllowed;
+
+  /// Stores feature permissions that were denied by the user, in the current session, local to this page.
+  QHash<QUrl, std::vector<WebPage::Feature>> m_permissionsDenied;
+};
 
 
 class WebWidget : public QWidget
@@ -76,6 +116,7 @@ private:
   QTimer *m_zoomTimer;
   QList<ClickFrame*> popItemFrames;
   bool m_showing_navscreen = true;
+  WebPage *m_page;
 
   void handleLeftSwipe() {
     qDebug() << "handleLeftSwipe()";

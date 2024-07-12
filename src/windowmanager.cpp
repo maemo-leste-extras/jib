@@ -56,6 +56,26 @@ void WindowManager::onSpawnSettings() {
     connect(m_settingsWindow, &SettingsWindow::allowPDFViewerChanged, mainWindow, &MainWindow::allowPDFViewerChanged);
     connect(m_settingsWindow, &SettingsWindow::allowScrollbarChanged, mainWindow, &MainWindow::allowScrollbarChanged);
     connect(m_settingsWindow, &SettingsWindow::allowWebGLChanged, mainWindow, &MainWindow::allowWebGLChanged);
+
+    connect(m_settingsWindow, &SettingsWindow::adblockFiltersEnabledChanged, [this](bool state){
+      m_ctx->adblock->onFilterChanged("filters", state);
+    });
+
+    connect(m_settingsWindow, &SettingsWindow::adblockAbpEnabledChanged, [this](bool state){
+      m_ctx->adblock->onFilterChanged("abp", state);
+    });
+
+    connect(m_settingsWindow, &SettingsWindow::adblockPrivacyEnabledChanged, [this](bool state){
+      m_ctx->adblock->onFilterChanged("privacy", state);
+    });
+
+    connect(m_settingsWindow, &SettingsWindow::adblockAbuseEnabledChanged, [this](bool state){
+      m_ctx->adblock->onFilterChanged("resource-abuse", state);
+    });
+
+    connect(m_settingsWindow, &SettingsWindow::adblockUnbreakEnabledChanged, [this](bool state){
+      m_ctx->adblock->onFilterChanged("unbreak", state);
+    });
   }
 
   m_settingsWindow->show();

@@ -45,7 +45,6 @@ void WindowManager::onSpawnSettings() {
   m_settingsWindow = new SettingsWindow(nullptr);
   connect(m_settingsWindow, &SettingsWindow::windowClosing, [=]{
       m_settingsWindow = nullptr;  // settingswindow does auto-delete
-      qDebug() << "yay";
   });
 
   for(const auto &mainWindow: windows.values()) {

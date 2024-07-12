@@ -301,7 +301,9 @@ WebWidget::WebWidget(QWidget *parent) :
   m_zoomTimer->setInterval(1000);
   auto zoomFactor = config()->get(ConfigKeys::zoomFactor).toDouble();
   ui->webView->setZoomFactor(zoomFactor / 100);
+
   connect(m_zoomTimer, &QTimer::timeout, this, [=] {
+    auto zoomFactor = config()->get(ConfigKeys::zoomFactor).toDouble();
     auto _zoomFactor = ui->webView->zoomFactor();
     if(_zoomFactor * 100 != zoomFactor)
       ui->webView->setZoomFactor(zoomFactor / 100);

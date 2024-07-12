@@ -125,6 +125,7 @@ void SettingsWindow::onJSChanged(int idx) {
 }
 
 void SettingsWindow::onZoomChanged(int idx) {
+  qDebug() << idx;
   switch(idx) {
     case -2: {
       emit zoomChanged(0.75);
@@ -139,6 +140,7 @@ void SettingsWindow::onZoomChanged(int idx) {
     case -4: {
       emit zoomChanged(1.25);
       config()->set(ConfigKeys::zoomFactor, 125);
+      return;
     }
     case -5: {
       emit zoomChanged(1.50);

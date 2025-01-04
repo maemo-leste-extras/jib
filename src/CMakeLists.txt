@@ -70,16 +70,14 @@ target_include_directories(jib PUBLIC
         )
 
 add_definitions(${QT_DEFINITIONS})
-if(NOT "${CMAKE_BUILD_TYPE}" EQUAL "Debug")
+if(NOT "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
     add_definitions(-DQT_NO_DEBUG)
+else()
+    target_compile_definitions(jib PRIVATE DEBUG=1)
 endif()
 
 if(MAEMO)
     target_compile_definitions(jib PRIVATE MAEMO=1)
-endif()
-
-if(DEBUG)
-    target_compile_definitions(jib PRIVATE DEBUG=1)
 endif()
 
 target_compile_definitions(jib

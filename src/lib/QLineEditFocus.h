@@ -1,19 +1,21 @@
 #pragma once
 #include <QObject>
+#include <QDebug>
+#include <QEvent>
 #include <QLineEdit>
 #include <QMouseEvent>
 
-class QLineEditFocus : public QLineEdit {
+class QLineEditFocus : public QLineEdit
+{
   Q_OBJECT
 
 public:
-  QLineEditFocus(QWidget *parent = nullptr);
-  ~QLineEditFocus();
+  explicit QLineEditFocus(QWidget *parent = nullptr);
+  ~QLineEditFocus() override;
 
-signals:
-  void focussed(bool hasFocus);
+  signals:
+    void showSuggestions(bool inFocus);
 
 protected:
-  virtual void focusInEvent(QFocusEvent *e);
-  virtual void focusOutEvent(QFocusEvent *e);
+  bool eventFilter(QObject *obj, QEvent *ev) override;
 };

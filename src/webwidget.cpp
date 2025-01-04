@@ -72,7 +72,7 @@ bool WebPage::acceptNavigationRequest(const QUrl &url, QWebEnginePage::Navigatio
     URL pageUrl(url);
     auto pageUrlStr = pageUrl.toString();
 
-    if(!pageUrlStr.startsWith("data:") && !pageUrlStr.startsWith("about:")) {
+    if(!pageUrlStr.startsWith("data:") && !pageUrlStr.startsWith("about:") && pageUrlStr != "https://") {
       m_mainFrameAdBlockScript = m_adBlockManager->getDomainJavaScript(pageUrl);
 
       QWebEngineScriptCollection &scriptCollection = scripts();
@@ -183,12 +183,10 @@ WebWidget::WebWidget(QWidget *parent) :
   ui->urlBar->setStyleSheet("QLineEdit { background-color: #8e8e8e; padding-left: 8px; border-radius: 8px; padding-bottom:2px; }");
   this->setStyleSheet("background-color: #575757;");
 
-  connect(ui->urlBar, &QLineEditFocus::focussed, this, [=](bool inFocus) {
+  connect(ui->urlBar, &QLineEditFocus::showSuggestions, this, [=](bool inFocus) {
+    ui->urlBar->setText("https://");
     if(inFocus) {
       showSuggestions();
-      QTimer::singleShot(0, [=]{
-          ui->urlBar->selectAll();
-      });
     }
   });
 
@@ -382,7 +380,7 @@ void WebWidget::showSplash() {
   auto html = Utils::fileOpenQRC(":assets/splash.html");
   ui->webView->setHtml(html);
 
-  this->setURLBarText("about:blank");
+  this->setURLBarText("https://");
 
   ui->urlBar->selectAll();
 }

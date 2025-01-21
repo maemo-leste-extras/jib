@@ -184,7 +184,6 @@ WebWidget::WebWidget(QWidget *parent) :
   this->setStyleSheet("background-color: #575757;");
 
   connect(ui->urlBar, &QLineEditFocus::showSuggestions, this, [=](bool inFocus) {
-    ui->urlBar->setText("https://");
     if(inFocus) {
       showSuggestions();
     }

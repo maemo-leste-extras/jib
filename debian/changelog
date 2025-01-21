@@ -1,3 +1,10 @@
+jib (0.6.2) unstable; urgency=medium
+
+  * remove filter rule, does not work with space.initlab.org noopjs redirect
+  * webwidget: do not prefill https://
+
+ -- Sander <sander@kroket.io>  Sat, 04 Jan 2025 13:06:53 +0200
+
 jib (0.6.1) unstable; urgency=medium
 
   * Support for the him virtual keyboard

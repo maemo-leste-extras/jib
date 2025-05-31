@@ -26,8 +26,8 @@ static const QHash<ConfigKeys::ConfigKey, ConfigDirective> configStrings = {
   {ConfigKeys::adblockFiltersEnabled,{QS("adblockFiltersEnabled"), true}},
   {ConfigKeys::adblockAbpEnabled,{QS("adblockAbpEnabled"), false}},
   {ConfigKeys::adblockPrivacyEnabled,{QS("adblockPrivacyEnabled"), false}},
-  {ConfigKeys::adblockAbuseEnabled,{QS("adblockAbuseEnabled"), false}},
-  {ConfigKeys::adblockUnbreakEnabled,{QS("adblockUnbreakEnabled"), false}}
+  {ConfigKeys::adblockAbuseEnabled,{QS("adblockAbuseEnabled"), true}},
+  {ConfigKeys::adblockUnbreakEnabled,{QS("adblockUnbreakEnabled"), true}}
 };
 
 QPointer<Config> Config::m_instance(nullptr);

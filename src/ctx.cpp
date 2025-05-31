@@ -21,6 +21,12 @@ AppContext::AppContext(QCommandLineParser *cmdargs) : cmdargs(cmdargs) {
   this->createConfigDirectories({configDirectory, adblockDirectory, iconCacheDirectory});
   this->initdb();
 
+  // force set adblock 'privacy' to off, as privacy.txt does not work with our adblock integration
+  // did this ever work in Viper Browser?
+  config()->set(ConfigKeys::adblockPrivacyEnabled, false);
+  // same goes for "ABP"
+  config()->set(ConfigKeys::adblockAbpEnabled, false);
+
   adblock = new adblock::AdBlockManager(this);
   adblock->loadSubscriptions();
   historyModel = new HistoryModel(this);

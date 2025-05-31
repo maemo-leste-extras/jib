@@ -3,14 +3,6 @@
 #include <QtCore>
 #include <QSslSocket>
 
-#if defined(Q_OS_WIN)
-#include <windows.h>
-#endif
-
-#if defined(Q_OS_LINUX) && defined(STATIC)
-Q_IMPORT_PLUGIN(QXcbIntegrationPlugin)
-#endif
-
 #include <unistd.h>
 #include <sys/types.h>
 #include "mainwindow.h"
@@ -38,14 +30,11 @@ int main(int argc, char *argv[]) {
   parser.setApplicationDescription("Web");
   parser.process(app);
 
-  qDebug() << "SSL version: " << QSslSocket::sslLibraryVersionString();
-  qDebug() << "SSL build: " << QSslSocket::sslLibraryBuildVersionString();
-
   auto *ctx = new AppContext(&parser);
 #ifdef DEBUG
   ctx->isDebug = true;
 #endif
-  auto windowManager = new WindowManager(ctx);
+  const auto windowManager = new WindowManager(ctx);
   windowManager->onSpawn();
   return QApplication::exec();
 }

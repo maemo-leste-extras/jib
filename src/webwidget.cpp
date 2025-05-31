@@ -320,6 +320,18 @@ void WebWidget::popularItemsClear() {
   popItemFrames.clear();
 }
 
+void WebWidget::onGoBack() {
+  ui->webView->back();
+}
+
+void WebWidget::onGoForward() {
+  ui->webView->forward();
+}
+
+void WebWidget::onStop() {
+  ui->webView->stop();
+}
+
 void WebWidget::popularItemFill() {
   auto _width = 128;
   auto _height = 78;

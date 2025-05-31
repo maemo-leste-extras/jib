@@ -101,6 +101,9 @@ public slots:
   void onWindowCountChanged(int count);
   void onReloadClicked();
   void onToggleNavigation();
+  void onGoBack();
+  void onGoForward();
+  void onStop();
 
 private:
   void showContextMenu(const QPoint &pos);

@@ -51,12 +51,21 @@
     <property name="title">
      <string>w00t</string>
     </property>
+    <widget class="QMenu" name="menuNavigation">
+     <property name="title">
+      <string>Navigation</string>
+     </property>
+     <addaction name="actionToggle_navigation"/>
+     <addaction name="actionStop"/>
+    </widget>
+    <addaction name="actionBack"/>
+    <addaction name="actionForward"/>
     <addaction name="actionSettings"/>
     <addaction name="actionNew_window"/>
     <addaction name="actionReload_page"/>
-    <addaction name="actionToggle_navigation"/>
-    <addaction name="actionAbout"/>
     <addaction name="actionExit"/>
+    <addaction name="menuNavigation"/>
+    <addaction name="actionAbout"/>
    </widget>
    <addaction name="menuw00t"/>
   </widget>
@@ -72,7 +81,7 @@
   </action>
   <action name="actionReload_page">
    <property name="text">
-    <string>Reload page</string>
+    <string>Reload</string>
    </property>
   </action>
   <action name="actionNew_window">
@@ -88,6 +97,21 @@
   <action name="actionSettings">
    <property name="text">
     <string>Settings</string>
+   </property>
+  </action>
+  <action name="actionBack">
+   <property name="text">
+    <string>Back</string>
+   </property>
+  </action>
+  <action name="actionForward">
+   <property name="text">
+    <string>Forward</string>
+   </property>
+  </action>
+  <action name="actionStop">
+   <property name="text">
+    <string>Stop</string>
    </property>
   </action>
  </widget>

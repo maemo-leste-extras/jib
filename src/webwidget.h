@@ -77,7 +77,6 @@ public:
   void setURLBarText(const QString &url);
   void registerURLVisited(const QString &url);
   void setWindowTitle();
-  void showSplash();
   void popularItemFill();
   void popularItemsClear();
   ~WebWidget();

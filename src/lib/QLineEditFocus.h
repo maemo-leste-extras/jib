@@ -15,6 +15,7 @@ public:
 
   signals:
     void showSuggestions(bool inFocus);
+    void clicked();
 
 protected:
   bool eventFilter(QObject *obj, QEvent *ev) override;

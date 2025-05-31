@@ -128,6 +128,8 @@ WebWidget::WebWidget(QWidget *parent) :
 {
   ui->setupUi(this);
 
+  this->setURLBarText("about:blank");
+
   m_ctx = MainWindow::getContext();
   auto iconFont = m_ctx->iconFont();
   iconFont.setPointSize(16);
@@ -182,6 +184,10 @@ WebWidget::WebWidget(QWidget *parent) :
 
   ui->urlBar->setStyleSheet("QLineEdit { background-color: #8e8e8e; padding-left: 8px; border-radius: 8px; padding-bottom:2px; }");
   this->setStyleSheet("background-color: #575757;");
+
+  connect(ui->urlBar, &QLineEditFocus::clicked, this, [=] {
+    ui->urlBar->setText("");
+  });
 
   connect(ui->urlBar, &QLineEditFocus::showSuggestions, this, [=](bool inFocus) {
     if(inFocus) {
@@ -255,8 +261,6 @@ WebWidget::WebWidget(QWidget *parent) :
 
   connect(ui->webView, &QWebEngineView::iconChanged, this, &WebWidget::favIconChanged);
 
-  this->showSplash();
-
   ui->suggestionsTable->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
   ui->suggestionsTable->verticalHeader()->setVisible(false);
   ui->suggestionsTable->horizontalHeader()->setVisible(false);
@@ -283,6 +287,10 @@ WebWidget::WebWidget(QWidget *parent) :
   verticalHeader->setDefaultSectionSize(64);
 
   connect(ui->suggestionsTable, &ClickTable::emptySpaceClicked, [=] {
+    const auto url = ui->urlBar->text();
+    if (url.isEmpty() || url == "about:blank")
+      return;
+
     ui->urlBar->clearFocus();
     this->showWebview();
   });
@@ -394,15 +402,6 @@ void WebWidget::favIconChanged(const QIcon &icon) {
     auto pixmap = icon.pixmap(32, 32);
     pixmap.save(out_path);
   }
-}
-
-void WebWidget::showSplash() {
-  auto html = Utils::fileOpenQRC(":assets/splash.html");
-  ui->webView->setHtml(html);
-
-  this->setURLBarText("https://");
-
-  ui->urlBar->selectAll();
 }
 
 void WebWidget::onVisitUrl(const QString &url) {

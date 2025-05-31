@@ -1,3 +1,9 @@
+jib (0.6.4) unstable; urgency=medium
+
+  * webwidget: decrease number of suggestion items (droid4 has limited space)
+
+ -- Sander <sander@kroket.io>  Sat, 31 May 2025 20:15:53 +0200
+
 jib (0.6.3) unstable; urgency=medium
 
   * adblock: remove the 'privacy.txt' filter - dont think this ever worked as it matches on every URL (thus blocking every URL), we possibly needs some more logic in our adblocker to handle this correctly.

@@ -65,6 +65,7 @@
     <addaction name="actionReload_page"/>
     <addaction name="actionExit"/>
     <addaction name="menuNavigation"/>
+    <addaction name="actionCopy_URL"/>
     <addaction name="actionAbout"/>
    </widget>
    <addaction name="menuw00t"/>
@@ -112,6 +113,11 @@
   <action name="actionStop">
    <property name="text">
     <string>Stop/Halt loading</string>
+   </property>
+  </action>
+  <action name="actionCopy_URL">
+   <property name="text">
+    <string>Copy URL</string>
    </property>
   </action>
  </widget>

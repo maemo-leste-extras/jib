@@ -345,6 +345,12 @@ void WebWidget::onGoForward() {
   ui->webView->forward();
 }
 
+void WebWidget::onCopyURL() {
+  const auto url = ui->urlBar->text();
+  QClipboard *clipboard = QGuiApplication::clipboard();
+  clipboard->setText(url);
+}
+
 void WebWidget::onStop() {
   ui->webView->stop();
 }

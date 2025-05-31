@@ -103,6 +103,7 @@ public slots:
   void onGoBack();
   void onGoForward();
   void onStop();
+  void onCopyURL();
 
 private:
   void showContextMenu(const QPoint &pos);

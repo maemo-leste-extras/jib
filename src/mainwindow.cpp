@@ -40,6 +40,7 @@ MainWindow::MainWindow(AppContext *ctx, QString window_id, QString url, QWidget 
   connect(ui->actionExit, &QAction::triggered, this, &MainWindow::onQuitApplication);
   connect(ui->actionBack, &QAction::triggered, ui->widgetWeb, &WebWidget::onGoBack);
   connect(ui->actionForward, &QAction::triggered, ui->widgetWeb, &WebWidget::onGoForward);
+  connect(ui->actionCopy_URL, &QAction::triggered, ui->widgetWeb, &WebWidget::onCopyURL);
   // @TODO: enable when fullscreen bug is fixed; void onFullscreen() {
   //     is_fullscreen ? this->showNormal() : this->showFullScreen();
   //    is_fullscreen = !is_fullscreen;

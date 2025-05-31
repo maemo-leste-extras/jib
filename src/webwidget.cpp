@@ -4,6 +4,7 @@
 #include <QTableWidget>
 #include <QDesktopServices>
 #include <QSizePolicy>
+#include <utility>
 
 #include "lib/RequestInterceptor.h"
 
@@ -196,8 +197,7 @@ WebWidget::WebWidget(QWidget *parent) :
   });
 
   connect(ui->urlBar, &QLineEdit::textChanged, this, [=](QString text) {
-    if(!text.isEmpty() && text.length() > 2 && !text.startsWith("about:"))
-      m_ctx->suggestionModel->search(text);
+    m_ctx->suggestionModel->search(std::move(text));
   });
 
   connect(ui->webView, &QWebEngineView::urlChanged, [=](const QUrl &url) {
@@ -264,7 +264,7 @@ WebWidget::WebWidget(QWidget *parent) :
   ui->suggestionsTable->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
   ui->suggestionsTable->verticalHeader()->setVisible(false);
   ui->suggestionsTable->horizontalHeader()->setVisible(false);
-  ui->suggestionsTable->setShowGrid(true);
+  ui->suggestionsTable->setShowGrid(false);
   ui->suggestionsTable->setSelectionBehavior(QAbstractItemView::SelectRows);
   ui->suggestionsTable->setFont(QFont("Ubuntu", 22));
   ui->suggestionsTable->setModel(m_ctx->suggestionModel);
@@ -280,6 +280,7 @@ WebWidget::WebWidget(QWidget *parent) :
 
   ui->frameSuggestions->setAutoFillBackground(false);
   ui->frameSuggestions->setStyleSheet("background-color: #575757;");
+  showSuggestions();
 
   // fixed row height
   QHeaderView *verticalHeader = ui->suggestionsTable->verticalHeader();
@@ -288,7 +289,7 @@ WebWidget::WebWidget(QWidget *parent) :
 
   connect(ui->suggestionsTable, &ClickTable::emptySpaceClicked, [=] {
     const auto url = ui->urlBar->text();
-    if (url.isEmpty() || url == "about:blank")
+    if (url == "about:blank")
       return;
 
     ui->urlBar->clearFocus();
@@ -310,8 +311,6 @@ WebWidget::WebWidget(QWidget *parent) :
 //  });
   connect(this, &WebWidget::urlClicked, this, &WebWidget::onVisitUrl);
 
-  showWebview();
-
   m_zoomTimer->setInterval(1000);
   auto zoomFactor = config()->get(ConfigKeys::zoomFactor).toDouble();
   ui->webView->setZoomFactor(zoomFactor / 100);
@@ -325,7 +324,7 @@ WebWidget::WebWidget(QWidget *parent) :
   m_zoomTimer->start();
 
   onPopularSitesChanged();
-  showSuggestions();
+  m_ctx->suggestionModel->search("");
 }
 
 void WebWidget::popularItemsClear() {

@@ -268,10 +268,19 @@ WebWidget::WebWidget(QWidget *parent) :
   ui->suggestionsTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
   ui->suggestionsTable->setFocusPolicy(Qt::NoFocus);
   ui->suggestionsTable->setSelectionMode(QAbstractItemView::NoSelection);
+  ui->suggestionsTable->viewport()->setAttribute(Qt::WA_TranslucentBackground);
+  ui->suggestionsTable->setStyleSheet(
+    "QTableView { background: transparent; }"
+    "QTableView::item { background-color: #575757; }"
+  );
+
+  ui->frameSuggestions->setAutoFillBackground(false);
+  ui->frameSuggestions->setStyleSheet("background-color: #575757;");
+
   // fixed row height
   QHeaderView *verticalHeader = ui->suggestionsTable->verticalHeader();
   verticalHeader->setSectionResizeMode(QHeaderView::Fixed);
-  verticalHeader->setDefaultSectionSize(48);
+  verticalHeader->setDefaultSectionSize(64);
 
   connect(ui->suggestionsTable, &ClickTable::emptySpaceClicked, [=] {
     ui->urlBar->clearFocus();

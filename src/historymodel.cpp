@@ -116,42 +116,48 @@ void HistoryModel::appendItems(const QList<HistoryItem*> &_items) {
 }
 
 QVariant HistoryModel::data(const QModelIndex &index, int role) const {
-  if (index.row() < 0 || index.row() >= items.count())
-    return QVariant();
+  if (!index.isValid() || index.row() < 0 || index.row() >= items.count())
+    return {};
 
   const HistoryItem *acc = items[index.row()];
-  if(role == Qt::DisplayRole) {
-    switch(index.column()) {
-      case NameRole: {
-        auto name = acc->name();
+  if (!acc)
+    return {};
 
-        if(name.length() > 48)
-          return name.left(48) + "...";
+  switch (role) {
+    case Qt::DisplayRole:
+      switch (index.column()) {
+        case NameRole: {
+          QString name = acc->name();
+          return name.length() > 48 ? name.left(48) + "..." : name;
+        }
+        case DomainRole:
+          return acc->domain();
+        case DateRole:
+          return acc->date().toString("MM-dd HH:mm");
+        default:
+          return {};
+      }
 
-        return name;
-      }
-      case DomainRole:
-        return acc->domain();
-      case DateRole: {
-        auto _dt = acc->date();
-        return _dt.toString("MM-dd HH:mm");
-      }
-      case Qt::ForegroundRole:
-        return QVariant::fromValue(QColor(Qt::white));
-      default:
-        return QVariant();
-    }
-  } else if (role == Qt::DecorationRole) {
-    switch(index.column()) {
-      case HistoryRoles::NameRole:
+    case Qt::DecorationRole:
+      if (index.column() == HistoryRoles::NameRole && acc->thumb())
         return *acc->thumb();
-    }
+    return {};
+
+    // text color
+    case Qt::ForegroundRole:
+      return QColor(Qt::white);
+
+    // bg
+    case Qt::BackgroundRole:
+      return QColor(0, 0, 0, 0);
+
+    default:
+      return {};
   }
-  return QVariant();
 }
 
 QVariant HistoryModel::headerData(int section, Qt::Orientation orientation, int role) const {
-  if (role != Qt::DisplayRole) return QVariant();
+  if (role != Qt::DisplayRole) return {};
 
   switch (section) {
     case NameRole:
@@ -161,9 +167,9 @@ QVariant HistoryModel::headerData(int section, Qt::Orientation orientation, int 
     case DateRole:
       return QString("Date");
     default:
-      return QVariant();
+      return {};
   }
-  return QVariant();
+  return {};
 }
 
 int HistoryModel::columnCount(const QModelIndex &parent) const {

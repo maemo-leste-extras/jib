@@ -56,44 +56,41 @@ int SuggestionModel::rowCount(const QModelIndex & parent) const {
 }
 
 QVariant SuggestionModel::data(const QModelIndex &index, int role) const {
-  if (index.row() < 0 || index.row() >= items.count())
+  if (!index.isValid() || index.row() < 0 || index.row() >= items.count())
     return {};
 
   const SuggestionItem *acc = items[index.row()];
-  if(role == Qt::DisplayRole) {
-    switch(index.column()) {
-      case NameRole: {
-        auto name = acc->url;
 
-        if(name.length() > 70)
-          return name.left(70) + "...";
+  if (role == Qt::ForegroundRole)
+    return QVariant::fromValue(QColor(Qt::white));
 
-        return name;
-      }
-      case Qt::ForegroundRole:
-        return QVariant::fromValue(QColor(Qt::white));
-      default:
-        return {};
-    }
-  } else if (role == Qt::DecorationRole) {
-    switch(index.column()) {
-      case SuggestionRoles::NameRole:
-        return *acc->thumb();
+  if (role == Qt::BackgroundRole)
+    return QColor(0, 0, 0, 0);
+
+  if (role == Qt::DecorationRole) {
+    if (index.column() == SuggestionRoles::NameRole)
+      return *acc->thumb();
+  }
+
+  if (role == Qt::DisplayRole) {
+    if (index.column() == NameRole) {
+      auto name = acc->url;
+      return name.length() > 70 ? name.left(70) + "..." : name;
     }
   }
+
   return {};
 }
 
 QVariant SuggestionModel::headerData(int section, Qt::Orientation orientation, int role) const {
-  if (role != Qt::DisplayRole) return QVariant();
+  if (role != Qt::DisplayRole) return {};
 
   switch (section) {
     case NameRole:
       return QString("Title");
     default:
-      return QVariant();
+      return {};
   }
-  return QVariant();
 }
 
 int SuggestionModel::columnCount(const QModelIndex &parent) const {

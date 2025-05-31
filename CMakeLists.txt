@@ -13,6 +13,7 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 set(CMAKE_CXX_STANDARD 17)
 include(FindCcache)
 
+include(FindPkgConfig)
 pkg_search_module(LIBHILDON hildon-1)
 if(DEFINED LIBHILDON_LIBRARIES)
     set(MAEMO ON)

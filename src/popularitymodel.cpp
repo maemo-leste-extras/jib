@@ -41,6 +41,9 @@ void PopularSites::onUpdate() {
     auto title = q.value(1).toString();
     auto scheme = q.value(2).toString();
     auto count = q.value(3).toInt();
+    if (domain.isEmpty() || title.isEmpty() || scheme.isEmpty())
+      continue;
+
     model->append(new PopularityItem(domain, title, scheme, count, this));
     total += 1;
   }

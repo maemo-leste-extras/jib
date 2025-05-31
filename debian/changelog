@@ -1,3 +1,20 @@
+jib (0.6.3) unstable; urgency=medium
+
+  * adblock: remove the 'privacy.txt' filter - dont think this ever worked as it matches on every URL (thus blocking every URL), we possibly needs some more logic in our adblocker to handle this correctly.
+  * adblock: enable the other 3 adblock dictionaries by default
+  * mainwindow: added menu item: copy URL
+  * popularitymodel: skip empty items
+  * webwidget: fix wonky URLbar behavior whilst using virtualkeyboard
+  * webwidget: fix wonky suggestions table behavior
+  * webwidget: fix suggestions table colors, fix suggestions table data()
+  * main: cleanup
+  * cmake: remove dep openssl
+  * settings: hide scrollarea horizontal bar, and space out the zoom checkboxes
+  * clion_debug: move to lib/
+  * navigation: implement back/forward/stop
+
+ -- Sander <sander@kroket.io>  Sat, 31 May 2025 20:15:53 +0200
+
 jib (0.6.2) unstable; urgency=medium
 
   * remove filter rule, does not work with space.initlab.org noopjs redirect

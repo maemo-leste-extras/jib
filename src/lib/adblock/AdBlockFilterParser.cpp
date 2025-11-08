@@ -461,7 +461,7 @@ bool FilterParser::parseScriptInjection(Filter *filter) const
     QString injectionStr = filter->m_evalString.mid(keywordLength);
     injectionStr = injectionStr.left(injectionStr.lastIndexOf(QChar(')')));
 
-    QStringList injectionArgs = injectionStr.split(QChar(','), QString::SplitBehavior::SkipEmptyParts);
+    QStringList injectionArgs = injectionStr.split(QChar(','), Qt::SkipEmptyParts);
     const QString &resourceName = injectionArgs.at(0);
 
     // Fetch resource from AdBlockManager and set value as m_evalString
@@ -665,7 +665,7 @@ void FilterParser::parseForCSP(Filter *filter) const
 
 void FilterParser::parseDomains(const QString &domainString, QChar delimiter, Filter *filter) const
 {
-    QStringList domainList = domainString.split(delimiter, QString::SplitBehavior::SkipEmptyParts);
+  QStringList domainList = domainString.split(delimiter, Qt::SkipEmptyParts);
 	if (domainList.isEmpty())
 		domainList.append(domainString);
 
@@ -684,7 +684,7 @@ void FilterParser::parseDomains(const QString &domainString, QChar delimiter, Fi
 
 void FilterParser::parseOptions(const QString &optionString, Filter *filter) const
 {
-    QStringList optionsList = optionString.split(QChar(','), QString::SplitBehavior::SkipEmptyParts);
+    QStringList optionsList = optionString.split(QChar(','), Qt::SkipEmptyParts);
     for (const QString &option : optionsList)
     {
         const bool optionException = (option.at(0) == QChar('~'));

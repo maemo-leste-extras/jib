@@ -3,7 +3,6 @@
 #include <iostream>
 
 #include <QMainWindow>
-#include <QtWebEngine>
 #include <QWebEngineView>
 #include <QWebEnginePage>
 #include <QCompleter>

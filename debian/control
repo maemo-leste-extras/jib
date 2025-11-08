@@ -3,21 +3,18 @@ Section: user/utilities
 Priority: extra
 Maintainer: Sander <sander@kroket.io>
 Build-Depends: debhelper (>= 10),
-    qtbase5-dev,
+    qt6-base-dev,
     ccache,
     cmake,
     libx11-dev,
     zlib1g-dev,
     libpng-dev,
     libssl-dev,
-    libqt5svg5-dev,
-    libqt5maemo5-dev,
-    libqt5x11extras5-dev,
-    libqt5charts5-dev,
-    qtmultimedia5-dev,
-    libqt5network5,
-    qtwebengine5-dev,
-    libqt5sql5-sqlite
+    qt6-svg-dev,
+    qt6-charts-dev,
+    qt6-multimedia-dev,
+    qt6-webengine-dev,
+    libqt6sql6-sqlite
 Homepage: https://github.com/maemo-leste-extras/jib
 XSBC-Bugtracker: https://github.com/maemo-leste-extras/jib/issues
 Vcs-Git: https://github.com/maemo-leste-extras/jib/
@@ -27,11 +24,13 @@ Vcs-Browser: https://github.com/maemo-leste-extras/jib/
 Package: jib
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
-    libssl1.1,
-    libqt5network5,
-    libqt5charts5,
-    libqt5webengine5,
-    libqt5sql5-sqlite
+    libqt6network6,
+    libqt6charts6,
+    libqt6webenginecore6,
+    libqt6sql6-sqlite,
+    qt6-input-maemo,
+    libqt6-qpa-maemo,
+    libqt6-style-maemo
 Description: A simple Qt/Chromium based web-browser for Maemo Leste
 XB-Maemo-Display-Name: Jib
 XB-Maemo-Icon-26: iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAIG0lEQVRo3u2a

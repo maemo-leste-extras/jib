@@ -2,8 +2,6 @@
 
 #include <QObject>
 #include <QSettings>
-#include <QRegExp>
-#include <QTextCodec>
 #include <QCryptographicHash>
 #include <QStandardItemModel>
 #include <QTextCharFormat>

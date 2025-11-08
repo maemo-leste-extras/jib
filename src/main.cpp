@@ -17,7 +17,12 @@ int main(int argc, char *argv[]) {
   clion_debug_setup();
 #endif
 
-  QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+  qputenv("QT_DEBUG_PLUGINS", QByteArray("1"));
+
+  qputenv("QT_STYLE_OVERRIDE", QByteArray("maemo5"));
+  qputenv("QT_QPA_PLATFORMTHEME", QByteArray("maemo5"));
+  qputenv("QT_QPA_PLATFORM", QByteArray("maemo"));
+
   QApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
   QApplication::setApplicationName("jib");
   QApplication::setOrganizationDomain("https://maemo-leste.github.io/");

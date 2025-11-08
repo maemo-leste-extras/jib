@@ -13,7 +13,7 @@ bool Utils::readJsonFile(QIODevice &device, QSettings::SettingsMap &map) {
 }
 
 QString Utils::barrayToString(const QByteArray &data) {
-  return QString(QTextCodec::codecForMib(106)->toUnicode(data));
+  return QString::fromUtf8(data);
 }
 
 bool Utils::writeJsonFile(QIODevice &device, const QSettings::SettingsMap &map) {

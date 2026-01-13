@@ -27,7 +27,6 @@ Vcs-Browser: https://github.com/maemo-leste-extras/jib/
 Package: jib
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
-    libssl1.1,
     libqt5network5,
     libqt5charts5,
     libqt5webengine5,

@@ -1,3 +1,9 @@
+jib (0.6.6) unstable; urgency=medium
+
+  * debian/control: update depends for t64
+
+ -- Sander <sander@kroket.io>  Tue, 13 Jan 2026 19:05:53 +0200
+
 jib (0.6.5) unstable; urgency=medium
 
   * debian/control: remove ssl runtime dependency - it is already satisfied by the deb's dev package requirement

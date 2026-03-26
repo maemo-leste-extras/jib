@@ -1,3 +1,9 @@
+jib (0.6.7) unstable; urgency=medium
+
+  * debian/postinst: fix invalid bash
+
+ -- Sander <sander@kroket.io>  Tue, 26 Mar 2026 19:05:53 +0200
+
 jib (0.6.6) unstable; urgency=medium
 
   * debian/control: update depends for t64
